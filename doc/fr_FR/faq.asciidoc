@@ -1,0 +1,27 @@
+[panel,primary]
+.Quel type de gateway rflink est supporté ?
+--
+RFLink utilise un Arduino Mega, celui-ci doit être branché en USB sur un Jeedom (maître ou esclave)
+
+--
+
+[panel,primary]
+.Qu'est-ce que rflink ?
+--
+RFLink est une gateway pour les protocoles sans fil RF433
+
+--
+
+[panel,primary]
+.Ma passerelle est branchée en USB sur un jeedom satellite et le service ne démarre pas ?
+--
+Vérifier votre configuration réseau Jeedom dans Général->Administration->Configuration dans la partie Réseau
+--
+
+[panel,primary]
+.Est-ce que je peux flasher le firmware de mon Rflink en ligne de commande ?
+--
+Oui avec la commande ci dessous depuis votre Jeedom
+
+/usr/bin/avrdude -v -v -v -p atmega2560 -c stk500v2 -P /dev/ttyUSB0 -b 115200 -U flash:w:/usr/share/nginx/www/jeedom/plugins/rflink/resources/rflink/RFLink.cpp.hex:i
+--
