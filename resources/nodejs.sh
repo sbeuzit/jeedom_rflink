@@ -42,6 +42,10 @@ fi
 
 echo 70 > /tmp/rflink_dep
 
+sudo apt-get -y install avrdude
+
+echo 75 > /tmp/rflink_dep
+
 cd ../node/
 npm cache clean
 sudo npm cache clean
