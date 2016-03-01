@@ -28,6 +28,10 @@ try {
         ajax::success(rflink::flashRF());
     }
 
+    if (init('action') == 'saveInclude') {
+        ajax::success(rflink::saveInclude(init('value')));
+    }
+
     if (init('action') == 'netgate') {
         ajax::success(rflink::saveNetGate(init('value')));
     }

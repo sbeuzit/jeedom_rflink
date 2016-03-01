@@ -104,13 +104,6 @@ if (!isConnect()) {
           </div>
         </div>
       </div>
-      <div class="form-group">
-
-        <label class="col-lg-4 control-label" >{{Inclusion}} :</label>
-        <div class="col-lg-2">
-          <input type="checkbox" class="configKey form-control bootstrapSwitch" data-label-text="{{Activer}}" data-l1key="include_mode" checked=""/>
-        </div>
-      </div>
     </fieldset>
   </form>
   <?php
@@ -130,15 +123,7 @@ if (!isConnect()) {
                   echo '<option value="' . $name . '">' . $name . ' (' . $value . ')</option>';
                 }
                 ?>
-                <option value="acm">{{Non ttyUSB (/dev/ttyACM0)}}</option>
               </select>
-            </div>
-          </div>
-          <div class="form-group">
-
-            <label class="col-lg-4 control-label" >{{Inclusion}} :</label>
-            <div class="col-lg-2">
-              <input type="checkbox" class="slaveConfigKey form-control bootstrapSwitch" data-label-text="{{Activer}}" data-l1key="include_mode" checked=""/>
             </div>
           </div>
 

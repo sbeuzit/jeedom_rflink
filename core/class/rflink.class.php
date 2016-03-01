@@ -68,7 +68,8 @@ class rflink extends eqLogic {
     }
     log::add('rflink', 'info', 'Lancement du démon rflink');
 
-    $inclusion = config::byKey('include_mode', 'rflink');
+    //$inclusion = config::byKey('include_mode', 'rflink');
+    $inclusion = 1;
 
     if (config::byKey('nodeGateway', 'rflink') != 'none' && config::byKey('nodeGateway', 'rflink') != '') {
       if (config::byKey('nodeGateway', 'rflink') == 'acm') {
@@ -434,14 +435,16 @@ class rflink extends eqLogic {
         }
         $value = $args['CMD'];
         if ($value == 'OFF') {
+          $request = $cmd . ';' . $value;
           $value = '0';
           $generictype = 'ENERGY_OFF';
         }
         if ($value == 'ON') {
+          $request = $cmd . ';' . $value;
           $value = '1';
           $generictype = 'ENERGY_ON';
         }
-        $request = $cmd . ';' . $value;
+
         //saveValue
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
         if (!is_object($rflinkCmd)) {
@@ -454,7 +457,7 @@ class rflink extends eqLogic {
           $rflinkCmd->setOrder($order);
           $rflinkCmd->setLogicalId($cmd);
           $rflinkCmd->setType('info');
-          $rflinkCmd->setSubType('string');
+          $rflinkCmd->setSubType('binary');
           $rflinkCmd->setDisplay('generic_type','ENERGY_STATUS');
           $rflinkCmd->setName( 'Switch ' . $cmd . ' - ' . $order );
         }
@@ -478,7 +481,7 @@ class rflink extends eqLogic {
           $rflinkCmd->setType('action');
           $rflinkCmd->setSubType('other');
           $rflinkCmd->setName( 'Switch ' . $request . ' - ' . $order );
-          $rflinkCmd->setConfiguration('value', $request);
+          $rflinkCmd->setConfiguration('value', $value);
           $rflinkCmd->setConfiguration('request', $request);
           $rflinkCmd->setDisplay('generic_type',$generictype);
           $rflinkCmd->save();
@@ -603,6 +606,10 @@ class rflink extends eqLogic {
   public static function saveGateway() {
     $status = init('status');
     config::save('gateway', $status,  'rflink');
+  }
+
+  public static function saveInclude($mode) {
+    config::save('include_mode', $mode,  'rflink');
   }
 
   public static function saveNetGate($value) {
