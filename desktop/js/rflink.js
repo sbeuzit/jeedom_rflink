@@ -32,29 +32,46 @@ $('#bt_healthRflink').on('click', function () {
 });
 
 $('.changeIncludeState').on('click', function () {
-  changeIncludeState($(this).attr('data-mode'));
+    var el = $(this);
+    jeedom.config.save({
+        plugin : 'rflink',
+        configuration: {include_mode: el.attr('data-state')},
+        error: function (error) {
+          $('#div_alert').showAlert({message: error.message, level: 'danger'});
+      },
+      success: function () {
+        if (el.attr('data-state') == 1) {
+            $.hideAlert();
+            $('.changeIncludeState:not(.card)').removeClass('btn-default').addClass('btn-success');
+            $('.changeIncludeState').attr('data-state', 0);
+            $('.changeIncludeState.card').css('background-color','#8000FF');
+            $('.changeIncludeState.card span center').text('{{Arrêter l\'inclusion}}');
+            $('.changeIncludeState:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Arreter inclusion}}');
+            $('#div_inclusionAlert').showAlert({message: '{{Vous etes en mode inclusion. Recliquez sur le bouton d\'inclusion pour sortir de ce mode}}', level: 'warning'});
+        } else {
+            $.hideAlert();
+            $('.changeIncludeState:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
+            $('.changeIncludeState').attr('data-state', 1);
+            $('.changeIncludeState:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Mode inclusion}}');
+            $('.changeIncludeState.card span center').text('{{Mode inclusion}}');
+            $('.changeIncludeState.card').css('background-color','#ffffff');
+            $('#div_inclusionAlert').hideAlert();
+        }
+    }
+});
 });
 
-function changeIncludeState(_mode) {
-  $.ajax({// fonction permettant de faire de l'ajax
-  type: "POST", // méthode de transmission des données au fichier php
-  url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
-  data: {
-    action: "saveInclude",
-    value: _mode,
-  },
-  dataType: 'json',
-  error: function (request, status, error) {
-    handleAjaxError(request, status, error);
-  },
-  success: function (data) { // si l'appel a bien fonctionné
-  if (data.state != 'ok') {
-    $('#div_alert').showAlert({message: data.result, level: 'danger'});
-    return;
-  }
-}
+$('body').on('rflink::includeDevice', function (_event,_options) {
+    if (modifyWithoutSave) {
+        $('#div_inclusionAlert').showAlert({message: '{{Un périphérique vient d\'être inclu/exclu. Veuillez réactualiser la page}}', level: 'warning'});
+    } else {
+        if (_options == '') {
+            window.location.reload();
+        } else {
+            window.location.href = 'index.php?v=d&p=rflink&m=rflink&id=' + _options;
+        }
+    }
 });
-}
 
 $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
   var el = $(this);

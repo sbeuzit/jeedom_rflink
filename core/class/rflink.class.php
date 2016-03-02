@@ -294,24 +294,26 @@ class rflink extends eqLogic {
       }
 
       $rflink = self::byLogicalId($nodeid, 'rflink');
-      $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
-      if (!is_object($rflinkCmd)) {
-        log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
-        $cmds = $rflink->getCmd();
-        $order = count($cmds);
-        $rflinkCmd = new rflinkCmd();
-        $rflinkCmd->setEqLogic_id($rflink->getId());
-        $rflinkCmd->setEqType('rflink');
-        $rflinkCmd->setOrder($order);
-        $rflinkCmd->setLogicalId($cmd);
-        $rflinkCmd->setType('info');
-        $rflinkCmd->setSubType('string');
-        $rflinkCmd->setName( $cmd . ' - ' . $order );
+      if (is_object($rflink)) {
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
+        if (!is_object($rflinkCmd)) {
+          log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($cmd);
+          $rflinkCmd->setType('info');
+          $rflinkCmd->setSubType('string');
+          $rflinkCmd->setName( $cmd . ' - ' . $order );
+        }
+        $rflinkCmd->setConfiguration('value', $value);
+        $rflinkCmd->setConfiguration('request', $request);
+        $rflinkCmd->save();
+        $rflinkCmd->event($value);
       }
-      $rflinkCmd->setConfiguration('value', $value);
-      $rflinkCmd->setConfiguration('request', $request);
-      $rflinkCmd->save();
-      $rflinkCmd->event($value);
     }
 
 
@@ -410,6 +412,11 @@ class rflink extends eqLogic {
       $rflink->setIsEnable(true);
       $rflink->setConfiguration('lastCommunication', date('Y-m-d H:i:s'));
       $rflink->save();
+      event::add('rflink::includeDevice',
+      array(
+        'state' => $state
+      )
+      );
     }
 
     if (is_object($rflink)) {
@@ -434,6 +441,112 @@ class rflink extends eqLogic {
           }
         }
         $value = $args['CMD'];
+
+        if ($protocol == 'RTS') {
+          $rtsid = 'PAIR' . $cmd;
+          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+          if (!is_object($rflinkCmd) && is_object($rflink)) {
+            log::add('rflink', 'debug', 'Commande non existante, création PAIR sur ' . $nodeid);
+            $cmds = $rflink->getCmd();
+            $order = count($cmds);
+            $rflinkCmd = new rflinkCmd();
+            $rflinkCmd->setEqLogic_id($rflink->getId());
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setLogicalId($rtsid);
+            $rflinkCmd->setType('action');
+            $rflinkCmd->setSubType('other');
+            $rflinkCmd->setName( 'Appairement ' . $cmd );
+            $rflinkCmd->setConfiguration('value', 'PAIR');
+            $rflinkCmd->setConfiguration('request', 'PAIR');
+            $rflinkCmd->setDisplay('generic_type',$generictype);
+            $rflinkCmd->save();
+          }
+          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
+          if (!is_object($rflinkCmd)) {
+            log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
+            $cmds = $rflink->getCmd();
+            $order = count($cmds);
+            $rflinkCmd = new rflinkCmd();
+            $rflinkCmd->setEqLogic_id($rflink->getId());
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setLogicalId($cmd);
+            $rflinkCmd->setType('info');
+            $rflinkCmd->setSubType('binary');
+            $rflinkCmd->setDisplay('generic_type','FLAP_STATE');
+            $rflinkCmd->setName( 'Statut ' . $cmd );
+          }
+          $rflinkCmd->setConfiguration('value', $value);
+          $rflinkCmd->setConfiguration('request', $request);
+          $rflinkCmd->save();
+          $rflinkCmd->event($value);
+          $cmId = $rflinkCmd->getId();
+
+          $rtsid = 'UP' . $cmd;
+          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+          if (!is_object($rflinkCmd) && is_object($rflink)) {
+            log::add('rflink', 'debug', 'Commande non existante, création UP sur ' . $nodeid);
+            $cmds = $rflink->getCmd();
+            $order = count($cmds);
+            $rflinkCmd = new rflinkCmd();
+            $rflinkCmd->setEqLogic_id($rflink->getId());
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setLogicalId($rtsid);
+            $rflinkCmd->setValue($cmId);
+            $rflinkCmd->setType('action');
+            $rflinkCmd->setSubType('other');
+            $rflinkCmd->setName( 'Montée ' . $cmd );
+            $rflinkCmd->setConfiguration('value', 'UP');
+            $rflinkCmd->setConfiguration('request', $cmd . ';UP');
+            $rflinkCmd->setDisplay('generic_type','FLAP_UP');
+            $rflinkCmd->save();
+          }
+
+          $rtsid = 'DOWN' . $cmd;
+          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+          if (!is_object($rflinkCmd) && is_object($rflink)) {
+            log::add('rflink', 'debug', 'Commande non existante, création DOWN sur ' . $nodeid);
+            $cmds = $rflink->getCmd();
+            $order = count($cmds);
+            $rflinkCmd = new rflinkCmd();
+            $rflinkCmd->setEqLogic_id($rflink->getId());
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setLogicalId($rtsid);
+            $rflinkCmd->setValue($cmId);
+            $rflinkCmd->setType('action');
+            $rflinkCmd->setSubType('other');
+            $rflinkCmd->setName( 'Descente ' . $cmd);
+            $rflinkCmd->setConfiguration('value', 'DOWN');
+            $rflinkCmd->setConfiguration('request', $cmd . ';DOWN');
+            $rflinkCmd->setDisplay('generic_type','FLAP_DOWN');
+            $rflinkCmd->save();
+          }
+
+          $rtsid = 'STOP' . $cmd;
+          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+          if (!is_object($rflinkCmd) && is_object($rflink)) {
+            log::add('rflink', 'debug', 'Commande non existante, création STOP sur ' . $nodeid);
+            $cmds = $rflink->getCmd();
+            $order = count($cmds);
+            $rflinkCmd = new rflinkCmd();
+            $rflinkCmd->setEqLogic_id($rflink->getId());
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setLogicalId($rtsid);
+            $rflinkCmd->setValue($cmId);
+            $rflinkCmd->setType('action');
+            $rflinkCmd->setSubType('other');
+            $rflinkCmd->setName( 'Stop ' . $cmd );
+            $rflinkCmd->setConfiguration('value', 'STOP');
+            $rflinkCmd->setConfiguration('request', $cmd . ';STOP');
+            $rflinkCmd->setDisplay('generic_type','FLAP_STOP');
+            $rflinkCmd->save();
+          }
+          return true;
+        }
         if ($value == 'OFF') {
           $request = $cmd . ';' . $value;
           $value = '0';
@@ -610,6 +723,15 @@ class rflink extends eqLogic {
 
   public static function saveInclude($mode) {
     config::save('include_mode', $mode,  'rflink');
+    $state = 1;
+    if ($mode == 1) {
+      $state = 0;
+    }
+    event::add('rflink::controller.data.controllerState',
+    array(
+      'state' => $state
+    )
+    );
   }
 
   public static function saveNetGate($value) {
@@ -702,10 +824,31 @@ class rflinkCmd extends cmd {
 
       $eqLogic = $this->getEqLogic();
 
-      rflink::sendCommand(
-      $eqLogic->getConfiguration('protocol') ,
-      $eqLogic->getConfiguration('id') ,
-      $request );
+      if ($request != 'PAIR') {
+        rflink::sendCommand(
+        $eqLogic->getConfiguration('protocol') ,
+        $eqLogic->getConfiguration('id') ,
+        $request );
+      } else {
+        rflink::sendCommand(
+        $eqLogic->getConfiguration('protocol') ,
+        $eqLogic->getConfiguration('id') ,
+        '0;ON' );
+
+        $id1 = dechex(hexdec($eqLogic->getConfiguration('id')) + 1);
+
+        rflink::sendCommand(
+        $eqLogic->getConfiguration('protocol') ,
+        $id1 ,
+        '0123;PAIR' );
+
+        rflink::sendCommand(
+        $eqLogic->getConfiguration('protocol') ,
+        $id1 ,
+        '0123;0;PAIR' );
+      }
+
+
 
       $result = $request;
 
