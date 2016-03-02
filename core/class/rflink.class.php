@@ -108,6 +108,9 @@ class rflink extends eqLogic {
       $log = "0";
     }
     $sensor_path = realpath(dirname(__FILE__) . '/../../node');
+    if ($usbGateway != "none") {
+      exec('sudo chmod -R 777 ' . $usbGateway);
+    }
     $cmd = 'nice -n 19 nodejs ' . $sensor_path . '/rflink.js ' . $url . ' ' . $usbGateway . ' "' . $net . '" ' . $inclusion . ' 1 ' . $log;
 
     log::add('rflink', 'debug', 'Lancement démon rflink : ' . $cmd);
@@ -459,7 +462,7 @@ class rflink extends eqLogic {
             $rflinkCmd->setName( 'Appairement ' . $cmd );
             $rflinkCmd->setConfiguration('value', 'PAIR');
             $rflinkCmd->setConfiguration('request', 'PAIR');
-            $rflinkCmd->setDisplay('generic_type',$generictype);
+            $rflinkCmd->setIsVisible(0);
             $rflinkCmd->save();
           }
           $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
