@@ -329,7 +329,7 @@ class rflink extends eqLogic {
     $body = json_decode($json, true);
     $data = $body['data'];
     if (strpos($data,'DEBUG') !== false) {
-      log::add('rflink', 'debug', 'Trame de debug recue ' . $arg[1]);
+      log::add('rflink', 'debug', 'Trame de debug recue : ' . $data);
       return false;
     }
     $datas = explode(";", $data);

@@ -1,0 +1,77 @@
+﻿RFLink Latest Firmware Version
+
+Q: Where can I find RFlink firmware versions:
+
+A: The latest firmware version can be downloaded from:  
+Sourceforge: https://sourceforge.net/projects/rflink/files/latest/download   
+  
+Please note that the RFLink Gateway is a freeware project.   
+Stuntteam is not making money in any way.   
+This means that there are no unlimited funds to purchase test devices,   
+it also means the project has to rely on you, the user, to send debug data.  
+  
+If you want to contribute to this project, you can send a donation which is more than welcome (see www.nemcon.nl/blog2 donation button),   
+or help with sending debug data of unsupported devices (you can even write and contribute plugins and/or code fixes),  
+or donate the device that you would like to see supported.  
+   
+Right now we are looking for some older remotes and/or switches.  
+Like for example: Blyss, Home Confort, Conrad, Kambrook etc.   
+For the implementation of the planned 2.4Ghz support we could use some simple MySensor devices.   
+For extending 868Mhz support we could use some devices as well.   
+If you have anything that you do not use, send a mail to frankzirrone@gmail.com
+Thanks in advance!  
+
+------------------------   
+Synology NAS:  
+
+Q: What do I need to use RFlink on a Synology NAS?
+
+A: If you want to use RFLink with a Synology NAS you can use:  
+- an Arduino Mega clone based on CH340 USB/serial chip  
+In all other cases:  
+- connect a 10 uF capacitor between reset and ground on the Arduino.   
+  Simply stick the pins of the capacitor in the power connector socket.  
+  When you want to update the firmware of the Arduino, remove the capacitor and reconnect it when done.   
+  For details about the Domoticz Synology package check out: http://www.jadahl.com   
+
+------------------------   
+RFlink via Network Connection:   
+
+Q: Can I connect RFLink to a network? 
+
+A: It is possible to use RFlink via a network connection using ser2net.   
+
+------------------------   
+RFlink Frequencies:   
+
+Q: What are the frequencies that RFlink can use?
+
+A: RFLink can be used with various frequencies like 315, 433, 868 mhz. and 2.4Ghz. 
+
+------------------------   
+Note for blinds controllers:   
+
+Q: How to use RFLink with Domoticz and a blinds controller?
+
+A: When using RFlink in combination with Domoticz and a Bofu, Brell or A OK blind controller,   
+Domoticz will detect the remote control commands and create switch devices.   
+Add the detected remote command as switch and then change the generated switch to a ventian blind.   
+This will give you an icon with up/stop/down options.   
+Once you have done this, you can control the blind from Domoticz.   
+
+------------------------   
+Supported Automation software:   
+
+Q: what home automation packages can work with RFlink?
+
+A: You can now use the RFLink Gateway with the following home automation software:   
+Domoticz        (http://www.domoticz.com/)   
+Jeedom          (http://www.jeedom.com/)   
+Domotiga        (http://domotiga.nl/projects/domotiga/wiki/RFLink/)   
+Pimatic         (http://forum.pimatic.org/topic/1327/new-plugin-for-rflink-gateway/)   
+If you are interested in others, contact us.
+
+------------------------   
+
+
+
