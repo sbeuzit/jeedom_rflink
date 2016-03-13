@@ -111,7 +111,7 @@ class rflink extends eqLogic {
     if ($usbGateway != "none") {
       exec('sudo chmod -R 777 ' . $usbGateway);
     }
-    $cmd = 'nice -n 19 nodejs ' . $sensor_path . '/rflink.js ' . $url . ' ' . $usbGateway . ' "' . $net . '" ' . $inclusion . ' 1 ' . $log;
+    $cmd = 'nice -n 19 nodejs ' . $sensor_path . '/rflink.js ' . $url . ' ' . $usbGateway . ' "' . $net . '" ' . $log;
 
     log::add('rflink', 'debug', 'Lancement démon rflink : ' . $cmd);
 
