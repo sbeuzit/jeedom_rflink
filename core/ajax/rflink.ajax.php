@@ -28,6 +28,10 @@ try {
         ajax::success(rflink::flashRF());
     }
 
+    if (init('action') == 'check') {
+        ajax::success(rflink::check());
+    }
+
     if (init('action') == 'saveInclude') {
         ajax::success(rflink::saveInclude(init('value')));
     }

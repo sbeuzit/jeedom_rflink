@@ -51,6 +51,14 @@ if (!isConnect()) {
       ?>
 
       <div class="form-group">
+      <label class="col-lg-4 control-label">{{Vérifier les mises à jour de firmware}}</label>
+      <div class="col-lg-3">
+      <a class="btn btn-success bt_check"><i class="fa fa-check"></i>
+        Vérifier
+      </a></div>
+      </div>
+
+      <div class="form-group">
       <label class="col-lg-4 control-label">{{Redémarrer le RFLink}}</label>
       <div class="col-lg-3">
       <a class="btn btn-warning bt_restart"><i class="fa fa-power-off"></i>
@@ -161,6 +169,29 @@ if (!isConnect()) {
       }
     });
   }
+});
+});
+
+$('.bt_check').on('click',function(){
+  $.ajax({// fonction permettant de faire de l'ajax
+  type: "POST", // méthode de transmission des données au fichier php
+  url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
+  data: {
+    action: "check",
+  },
+  dataType: 'json',
+  global: false,
+  error: function (request, status, error) {
+    handleAjaxError(request, status, error);
+  },
+  success: function (data) { // si l'appel a bien fonctionné
+  if (data.state != 'ok') {
+    $('#div_alert').showAlert({message: data.result, level: 'danger'});
+    return;
+  } else {
+    window.location.reload();
+  }
+}
 });
 });
 

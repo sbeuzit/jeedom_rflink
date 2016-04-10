@@ -157,30 +157,36 @@ class rflink extends eqLogic {
 
 
   public static function cronDaily() {
+    rflink::check();
+  }
+
+  public static function check() {
     $xml = new DOMDocument();
-    $xml->loadHTMLFile('http://sourceforge.net/projects/rflink/files/?source=navbar');
+    $xml->loadHTMLFile('http://www.nemcon.nl/blog2/2015/07/bb');
     foreach($xml->getElementsByTagName('a') as $link) {
-      if ($link->getAttribute('href') == "/projects/rflink/files/latest/download?source=files") {
-        $title = $link->getAttribute('title');
+      if (strpos($link->getAttribute('href'),"https://drive.google.com/open?id=") !== false) {
+        $title = $link->textContent;
+        //log::add('rflink','debug',print_r($link,true) );
         log::add('rflink','debug','Firmware dispo ' . $title );
-        $rmzip = explode(".zip", $title);
-        $release = substr($rmzip[0], -2);
+        $rmzip = explode(" ", $title);
+        $release = substr($rmzip[2], -2);
+
+        $gateway = config::byKey('gateLib','rflink');
+        $actual = substr($gateway, -2);
+
+        log::add('rflink','debug','Firmware dispo' . $release . ' actuel ' . $actual );
+
+        if ($release > $actual) {
+          //dwld
+          //http://sourceforge.net/projects/rflink/files/latest/download
+          $resource_path = realpath(dirname(__FILE__) . '/../../resources/');
+          $file = file_get_contents($link->getAttribute('href'));
+          file_put_contents('/tmp/rflink.zip',$file);
+          passthru('/bin/bash ' . $resource_path . '/update_firmware.sh ' . $resource_path . ' > ' . log::getPathToLog('rflink_flash') . ' 2>&1 &');
+          config::save('avaLib', $release,  'rflink');
+          return true;
+        }
       }
-    }
-
-    $gateway = config::byKey('gateLib','rflink');
-    $actual = substr($gateway, -2);
-
-    log::add('rflink','debug','Firmware dispo' . $release . ' actuel ' . $actual );
-
-    if ($release > $actual) {
-      //dwld
-      //http://sourceforge.net/projects/rflink/files/latest/download
-      $resource_path = realpath(dirname(__FILE__) . '/../../resources/');
-      $file = file_get_contents('http://sourceforge.net/projects/rflink/files/latest/download?source=files');
-      file_put_contents('/tmp/rflink.zip',$file);
-      passthru('/bin/bash ' . $resource_path . '/update_firmware.sh ' . $resource_path . ' > ' . log::getPathToLog('rflink_flash') . ' 2>&1 &');
-      config::save('avaLib', $release,  'rflink');
     }
   }
 
