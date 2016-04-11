@@ -162,30 +162,20 @@ class rflink extends eqLogic {
 
   public static function check() {
     $xml = new DOMDocument();
-    $xml->loadHTMLFile('http://www.nemcon.nl/blog2/2015/07/bb');
-    foreach($xml->getElementsByTagName('a') as $link) {
-      if (strpos($link->getAttribute('href'),"https://drive.google.com/open?id=") !== false) {
-        $title = $link->textContent;
-        //log::add('rflink','debug',print_r($link,true) );
-        log::add('rflink','debug','Firmware dispo ' . $title );
-        $rmzip = explode(" ", $title);
-        $release = substr($rmzip[2], -2);
-
-        $gateway = config::byKey('gateLib','rflink');
-        $actual = substr($gateway, -2);
-
-        log::add('rflink','debug','Firmware dispo' . $release . ' actuel ' . $actual );
-
-        if ($release > $actual) {
-          //dwld
-          //http://sourceforge.net/projects/rflink/files/latest/download
-          $resource_path = realpath(dirname(__FILE__) . '/../../resources/');
-          $file = file_get_contents($link->getAttribute('href'));
-          file_put_contents('/tmp/rflink.zip',$file);
-          passthru('/bin/bash ' . $resource_path . '/update_firmware.sh ' . $resource_path . ' > ' . log::getPathToLog('rflink_flash') . ' 2>&1 &');
-          config::save('avaLib', $release,  'rflink');
-          return true;
-        }
+    $gateway = config::byKey('gateLib','rflink');
+    $actual = substr($gateway, -2);
+    $test = $actual + 1;
+    $xml->load('http://www.nemcon.nl/blog2/fw/update.jsp?ver=1.1&rel=' . $test);
+    log::add('rflink','debug','Recherche firmware ' . $test . ' actuel ' . $actual );
+    $result = $xml->getElementsByTagName('Result');
+    foreach ($result as $element) {
+      if ($element->getAttribute('Value') == '1') {
+        $resource_path = realpath(dirname(__FILE__) . '/../../resources/rflink/RFLink.cpp.hex');
+        $file = file_get_contents($result->getAttribute('Url'));
+        log::add('rflink','debug','Téléchargement' . $result->getAttribute('Url') . ' pour ' . $resource_path );
+        file_put_contents('/tmp/rflink.zip',$resource_path);
+        config::save('avaLib', $release,  'rflink');
+        return true;
       }
     }
   }
@@ -240,7 +230,7 @@ class rflink extends eqLogic {
 
   public static function controlController( $command ) {
     if (config::byKey('nodeGateway', 'rflink') == 'none' || config::byKey('nodeGateway', 'rflink') == '') {
-        return false;
+      return false;
     }
     $urlNode = "127.0.0.1";
 
@@ -258,7 +248,7 @@ class rflink extends eqLogic {
 
   public static function sendToController( $protocol, $id, $request ) {
     if (config::byKey('nodeGateway', 'rflink') == 'none' || config::byKey('nodeGateway', 'rflink') == '') {
-        return false;
+      return false;
     }
     $urlNode = "127.0.0.1";
 
@@ -374,24 +364,24 @@ class rflink extends eqLogic {
       }
       if ($i > 3) {
         if (strpos($value,'=') !== false) {
-        $arg = explode("=", $value);
-        $args[$arg[0]] = $arg[1];
-        log::add('rflink', 'debug', 'Commande ' . $arg[0] . ' value ' . $arg[1]);
-        if ($arg[0] == 'SWITCH') {
-          // on garde de côté qu'on est sur une commande et pas une info
-          $switch = 1;
-        }
-        if ($arg[0] == 'BAT') {
-          // on garde de côté qu'on est sur une commande et pas une info
-          if ($arg[1] == 'LOW') {
+          $arg = explode("=", $value);
+          $args[$arg[0]] = $arg[1];
+          log::add('rflink', 'debug', 'Commande ' . $arg[0] . ' value ' . $arg[1]);
+          if ($arg[0] == 'SWITCH') {
             // on garde de côté qu'on est sur une commande et pas une info
-            $battery = 10;
-          } else {
-            $battery = 100;
+            $switch = 1;
+          }
+          if ($arg[0] == 'BAT') {
+            // on garde de côté qu'on est sur une commande et pas une info
+            if ($arg[1] == 'LOW') {
+              // on garde de côté qu'on est sur une commande et pas une info
+              $battery = 10;
+            } else {
+              $battery = 100;
+            }
           }
         }
       }
-    }
       $i++;
     }
 
@@ -425,149 +415,52 @@ class rflink extends eqLogic {
       array(
         'state' => $state
       )
-      );
+    );
+  }
+
+  if (is_object($rflink)) {
+    log::add('rflink', 'debug', 'Traitement des infos');
+    $rflink->setConfiguration('lastCommunication', date('Y-m-d H:i:s'));
+    $rflink->save();
+
+    if ($battery != 0) {
+      $rflink->batteryStatus($battery);
+      $rflink->save();
+      log::add('rflink', 'debug', 'Batterie ' . $battery);
     }
 
-    if (is_object($rflink)) {
-      log::add('rflink', 'debug', 'Traitement des infos');
-      $rflink->setConfiguration('lastCommunication', date('Y-m-d H:i:s'));
-      $rflink->save();
-
-      if ($battery != 0) {
-          $rflink->batteryStatus($battery);
-          $rflink->save();
-          log::add('rflink', 'debug', 'Batterie ' . $battery);
+    if ($switch == 1) {
+      $cmd = $args['SWITCH'];
+      log::add('rflink', 'debug', 'Switch recu ' . $cmd);
+      if ($cmd[0] == '0' && strlen($cmd) > 1) {
+        //supp les 0 en début de switch
+        $cmd = ltrim($cmd, "0");
+        if ($cmd == '') {
+          $cmd = '0';
+        }
       }
+      $value = $args['CMD'];
 
-      if ($switch == 1) {
-        $cmd = $args['SWITCH'];
-        log::add('rflink', 'debug', 'Switch recu ' . $cmd);
-        if ($cmd[0] == '0' && strlen($cmd) > 1) {
-          //supp les 0 en début de switch
-          $cmd = ltrim($cmd, "0");
-          if ($cmd == '') {
-            $cmd = '0';
-          }
-        }
-        $value = $args['CMD'];
-
-        if ($protocol == 'RTS') {
-          $rtsid = 'PAIR' . $cmd;
-          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
-          if (!is_object($rflinkCmd) && is_object($rflink)) {
-            log::add('rflink', 'debug', 'Commande non existante, création PAIR sur ' . $nodeid);
-            $cmds = $rflink->getCmd();
-            $order = count($cmds);
-            $rflinkCmd = new rflinkCmd();
-            $rflinkCmd->setEqLogic_id($rflink->getId());
-            $rflinkCmd->setEqType('rflink');
-            $rflinkCmd->setOrder($order);
-            $rflinkCmd->setLogicalId($rtsid);
-            $rflinkCmd->setType('action');
-            $rflinkCmd->setSubType('other');
-            $rflinkCmd->setName( 'Appairement ' . $cmd );
-            $rflinkCmd->setConfiguration('value', 'PAIR');
-            $rflinkCmd->setConfiguration('request', 'PAIR');
-            $rflinkCmd->setIsVisible(0);
-            $rflinkCmd->save();
-          }
-          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
-          if (!is_object($rflinkCmd)) {
-            log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
-            $cmds = $rflink->getCmd();
-            $order = count($cmds);
-            $rflinkCmd = new rflinkCmd();
-            $rflinkCmd->setEqLogic_id($rflink->getId());
-            $rflinkCmd->setEqType('rflink');
-            $rflinkCmd->setOrder($order);
-            $rflinkCmd->setLogicalId($cmd);
-            $rflinkCmd->setType('info');
-            $rflinkCmd->setSubType('binary');
-            $rflinkCmd->setDisplay('generic_type','FLAP_STATE');
-            $rflinkCmd->setName( 'Statut ' . $cmd );
-          }
-          $rflinkCmd->setConfiguration('value', $value);
-          $rflinkCmd->setConfiguration('request', $request);
+      if ($protocol == 'RTS') {
+        $rtsid = 'PAIR' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création PAIR sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Appairement ' . $cmd );
+          $rflinkCmd->setConfiguration('value', 'PAIR');
+          $rflinkCmd->setConfiguration('request', 'PAIR');
+          $rflinkCmd->setIsVisible(0);
           $rflinkCmd->save();
-          $rflinkCmd->event($value);
-          $cmId = $rflinkCmd->getId();
-
-          $rtsid = 'UP' . $cmd;
-          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
-          if (!is_object($rflinkCmd) && is_object($rflink)) {
-            log::add('rflink', 'debug', 'Commande non existante, création UP sur ' . $nodeid);
-            $cmds = $rflink->getCmd();
-            $order = count($cmds);
-            $rflinkCmd = new rflinkCmd();
-            $rflinkCmd->setEqLogic_id($rflink->getId());
-            $rflinkCmd->setEqType('rflink');
-            $rflinkCmd->setOrder($order);
-            $rflinkCmd->setLogicalId($rtsid);
-            $rflinkCmd->setValue($cmId);
-            $rflinkCmd->setType('action');
-            $rflinkCmd->setSubType('other');
-            $rflinkCmd->setName( 'Montée ' . $cmd );
-            $rflinkCmd->setConfiguration('value', 'UP');
-            $rflinkCmd->setConfiguration('request', $cmd . ';UP');
-            $rflinkCmd->setDisplay('generic_type','FLAP_UP');
-            $rflinkCmd->save();
-          }
-
-          $rtsid = 'DOWN' . $cmd;
-          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
-          if (!is_object($rflinkCmd) && is_object($rflink)) {
-            log::add('rflink', 'debug', 'Commande non existante, création DOWN sur ' . $nodeid);
-            $cmds = $rflink->getCmd();
-            $order = count($cmds);
-            $rflinkCmd = new rflinkCmd();
-            $rflinkCmd->setEqLogic_id($rflink->getId());
-            $rflinkCmd->setEqType('rflink');
-            $rflinkCmd->setOrder($order);
-            $rflinkCmd->setLogicalId($rtsid);
-            $rflinkCmd->setValue($cmId);
-            $rflinkCmd->setType('action');
-            $rflinkCmd->setSubType('other');
-            $rflinkCmd->setName( 'Descente ' . $cmd);
-            $rflinkCmd->setConfiguration('value', 'DOWN');
-            $rflinkCmd->setConfiguration('request', $cmd . ';DOWN');
-            $rflinkCmd->setDisplay('generic_type','FLAP_DOWN');
-            $rflinkCmd->save();
-          }
-
-          $rtsid = 'STOP' . $cmd;
-          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
-          if (!is_object($rflinkCmd) && is_object($rflink)) {
-            log::add('rflink', 'debug', 'Commande non existante, création STOP sur ' . $nodeid);
-            $cmds = $rflink->getCmd();
-            $order = count($cmds);
-            $rflinkCmd = new rflinkCmd();
-            $rflinkCmd->setEqLogic_id($rflink->getId());
-            $rflinkCmd->setEqType('rflink');
-            $rflinkCmd->setOrder($order);
-            $rflinkCmd->setLogicalId($rtsid);
-            $rflinkCmd->setValue($cmId);
-            $rflinkCmd->setType('action');
-            $rflinkCmd->setSubType('other');
-            $rflinkCmd->setName( 'Stop ' . $cmd );
-            $rflinkCmd->setConfiguration('value', 'STOP');
-            $rflinkCmd->setConfiguration('request', $cmd . ';STOP');
-            $rflinkCmd->setDisplay('generic_type','FLAP_STOP');
-            $rflinkCmd->save();
-          }
-          return true;
         }
-        if ($value == 'OFF') {
-          $request = $cmd . ';' . $value;
-          $value = '0';
-          $generictype = 'ENERGY_OFF';
-        }
-        if ($value == 'ON') {
-          $request = $cmd . ';' . $value;
-          $value = '1';
-          $generictype = 'ENERGY_ON';
-        }
-
-        //saveValue
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
         if (!is_object($rflinkCmd)) {
           log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
@@ -580,188 +473,285 @@ class rflink extends eqLogic {
           $rflinkCmd->setLogicalId($cmd);
           $rflinkCmd->setType('info');
           $rflinkCmd->setSubType('binary');
-          $rflinkCmd->setDisplay('generic_type','ENERGY_STATUS');
-          $rflinkCmd->setName( 'Switch ' . $cmd . ' - ' . $order );
+          $rflinkCmd->setDisplay('generic_type','FLAP_STATE');
+          $rflinkCmd->setName( 'Statut ' . $cmd );
         }
         $rflinkCmd->setConfiguration('value', $value);
         $rflinkCmd->setConfiguration('request', $request);
         $rflinkCmd->save();
         $rflinkCmd->event($value);
         $cmId = $rflinkCmd->getId();
-        //createCmd
-        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$request);
+
+        $rtsid = 'UP' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
         if (!is_object($rflinkCmd) && is_object($rflink)) {
-          log::add('rflink', 'debug', 'Commande non existante, création ' . $request . ' sur ' . $nodeid);
+          log::add('rflink', 'debug', 'Commande non existante, création UP sur ' . $nodeid);
           $cmds = $rflink->getCmd();
           $order = count($cmds);
           $rflinkCmd = new rflinkCmd();
           $rflinkCmd->setEqLogic_id($rflink->getId());
           $rflinkCmd->setEqType('rflink');
           $rflinkCmd->setOrder($order);
-          $rflinkCmd->setLogicalId($request);
+          $rflinkCmd->setLogicalId($rtsid);
           $rflinkCmd->setValue($cmId);
           $rflinkCmd->setType('action');
           $rflinkCmd->setSubType('other');
-          $rflinkCmd->setName( 'Switch ' . $request . ' - ' . $order );
-          $rflinkCmd->setConfiguration('value', $value);
-          $rflinkCmd->setConfiguration('request', $request);
-          $rflinkCmd->setDisplay('generic_type',$generictype);
+          $rflinkCmd->setName( 'Montée ' . $cmd );
+          $rflinkCmd->setConfiguration('value', 'UP');
+          $rflinkCmd->setConfiguration('request', $cmd . ';UP');
+          $rflinkCmd->setDisplay('generic_type','FLAP_UP');
           $rflinkCmd->save();
         }
-      } else {
-        log::add('rflink', 'debug', 'Valeur de capteur');
-        foreach ($args as $cmd => $value) {
-          log::add('rflink', 'debug', 'Commande ' . $cmd . ' value ' . $value);
-          if ($cmd != '') {
 
-            $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
-            if (!is_object($rflinkCmd)) {
-              log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
-              $cmds = $rflink->getCmd();
-              $order = count($cmds);
-              $rflinkCmd = new rflinkCmd();
-              $rflinkCmd->setEqLogic_id($rflink->getId());
-              $rflinkCmd->setEqType('rflink');
-              $rflinkCmd->setOrder($order);
-              $rflinkCmd->setLogicalId($cmd);
-              $rflinkCmd->setType('info');
-              switch ($cmd) {
-                case 'SWITCH' :
-                $generictype = 'ENERGY_STATE';
-                break;
-                case 'CMD' :
-                $generictype = 'ENERGY_STATE';
-                break;
-                case 'TEMP' :
-                $generictype = 'TEMPERATURE';
-                break;
-                case 'HUM' :
-                $generictype = 'HUMIDITY';
-                break;
-                case 'BARO' :
-                $generictype = 'PRESSURE';
-                break;
-                case 'HSTATUS' :
-                $generictype = 'HEATING_STATE';
-                break;
-                case 'UV' :
-                $generictype = 'UV';
-                break;
-                case 'BAT' :
-                $generictype = 'BATTERY';
-                break;
-                case 'RAIN' :
-                $generictype = 'RAIN_CURRENT';
-                break;
-                case 'RAINTOT' :
-                $generictype = 'RAIN_TOTAL';
-                break;
-                case 'WINSP' :
-                $generictype = 'WIND_SPEED';
-                break;
-                case 'AWINSP' :
-                $generictype = 'WIND_SPEED';
-                break;
-                case 'WINGS' :
-                $generictype = 'WIND_SPEED';
-                break;
-                case 'AWINGS' :
-                $generictype = 'WIND_SPEED';
-                break;
-                case 'WINDIR' :
-                $generictype = 'WIND_DIRECTION';
-                break;
-                case 'SMOKEALERT' :
-                $generictype = 'SMOKE';
-                break;
-                case 'PIR' :
-                $generictype = 'PRESENCE';
-                break;
-                case 'CO2' :
-                $generictype = 'CO2';
-                break;
-                case 'KWATT' :
-                $generictype = 'CONSUMPTION';
-                break;
-                case 'WATT' :
-                $generictype = 'CONSUMPTION';
-                break;
-                case 'VOLT' :
-                $generictype = 'VOLTAGE';
-                break;
-                case 'CURRENT' :
-                $generictype = 'VOLTAGE';
-                break;
-              }
-              $rflinkCmd->setDisplay('generic_type',$generictype);
-              if (strpos($numcmd,$cmd) !== false) {
-                $rflinkCmd->setSubType('numeric');
-              } else {
-                $rflinkCmd->setSubType('string');
-              }
-              $rflinkCmd->setName( $cmd . ' - ' . $order );
+        $rtsid = 'DOWN' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création DOWN sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setValue($cmId);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Descente ' . $cmd);
+          $rflinkCmd->setConfiguration('value', 'DOWN');
+          $rflinkCmd->setConfiguration('request', $cmd . ';DOWN');
+          $rflinkCmd->setDisplay('generic_type','FLAP_DOWN');
+          $rflinkCmd->save();
+        }
+
+        $rtsid = 'STOP' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création STOP sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setValue($cmId);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Stop ' . $cmd );
+          $rflinkCmd->setConfiguration('value', 'STOP');
+          $rflinkCmd->setConfiguration('request', $cmd . ';STOP');
+          $rflinkCmd->setDisplay('generic_type','FLAP_STOP');
+          $rflinkCmd->save();
+        }
+        return true;
+      }
+      if ($value == 'OFF') {
+        $request = $cmd . ';' . $value;
+        $value = '0';
+        $generictype = 'ENERGY_OFF';
+      }
+      if ($value == 'ON') {
+        $request = $cmd . ';' . $value;
+        $value = '1';
+        $generictype = 'ENERGY_ON';
+      }
+
+      //saveValue
+      $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
+      if (!is_object($rflinkCmd)) {
+        log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
+        $cmds = $rflink->getCmd();
+        $order = count($cmds);
+        $rflinkCmd = new rflinkCmd();
+        $rflinkCmd->setEqLogic_id($rflink->getId());
+        $rflinkCmd->setEqType('rflink');
+        $rflinkCmd->setOrder($order);
+        $rflinkCmd->setLogicalId($cmd);
+        $rflinkCmd->setType('info');
+        $rflinkCmd->setSubType('binary');
+        $rflinkCmd->setDisplay('generic_type','ENERGY_STATUS');
+        $rflinkCmd->setName( 'Switch ' . $cmd . ' - ' . $order );
+      }
+      $rflinkCmd->setConfiguration('value', $value);
+      $rflinkCmd->setConfiguration('request', $request);
+      $rflinkCmd->save();
+      $rflinkCmd->event($value);
+      $cmId = $rflinkCmd->getId();
+      //createCmd
+      $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$request);
+      if (!is_object($rflinkCmd) && is_object($rflink)) {
+        log::add('rflink', 'debug', 'Commande non existante, création ' . $request . ' sur ' . $nodeid);
+        $cmds = $rflink->getCmd();
+        $order = count($cmds);
+        $rflinkCmd = new rflinkCmd();
+        $rflinkCmd->setEqLogic_id($rflink->getId());
+        $rflinkCmd->setEqType('rflink');
+        $rflinkCmd->setOrder($order);
+        $rflinkCmd->setLogicalId($request);
+        $rflinkCmd->setValue($cmId);
+        $rflinkCmd->setType('action');
+        $rflinkCmd->setSubType('other');
+        $rflinkCmd->setName( 'Switch ' . $request . ' - ' . $order );
+        $rflinkCmd->setConfiguration('value', $value);
+        $rflinkCmd->setConfiguration('request', $request);
+        $rflinkCmd->setDisplay('generic_type',$generictype);
+        $rflinkCmd->save();
+      }
+    } else {
+      log::add('rflink', 'debug', 'Valeur de capteur');
+      foreach ($args as $cmd => $value) {
+        log::add('rflink', 'debug', 'Commande ' . $cmd . ' value ' . $value);
+        if ($cmd != '') {
+
+          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$cmd);
+          if (!is_object($rflinkCmd)) {
+            log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
+            $cmds = $rflink->getCmd();
+            $order = count($cmds);
+            $rflinkCmd = new rflinkCmd();
+            $rflinkCmd->setEqLogic_id($rflink->getId());
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setLogicalId($cmd);
+            $rflinkCmd->setType('info');
+            switch ($cmd) {
+              case 'SWITCH' :
+              $generictype = 'ENERGY_STATE';
+              break;
+              case 'CMD' :
+              $generictype = 'ENERGY_STATE';
+              break;
+              case 'TEMP' :
+              $generictype = 'TEMPERATURE';
+              break;
+              case 'HUM' :
+              $generictype = 'HUMIDITY';
+              break;
+              case 'BARO' :
+              $generictype = 'PRESSURE';
+              break;
+              case 'HSTATUS' :
+              $generictype = 'HEATING_STATE';
+              break;
+              case 'UV' :
+              $generictype = 'UV';
+              break;
+              case 'BAT' :
+              $generictype = 'BATTERY';
+              break;
+              case 'RAIN' :
+              $generictype = 'RAIN_CURRENT';
+              break;
+              case 'RAINTOT' :
+              $generictype = 'RAIN_TOTAL';
+              break;
+              case 'WINSP' :
+              $generictype = 'WIND_SPEED';
+              break;
+              case 'AWINSP' :
+              $generictype = 'WIND_SPEED';
+              break;
+              case 'WINGS' :
+              $generictype = 'WIND_SPEED';
+              break;
+              case 'AWINGS' :
+              $generictype = 'WIND_SPEED';
+              break;
+              case 'WINDIR' :
+              $generictype = 'WIND_DIRECTION';
+              break;
+              case 'SMOKEALERT' :
+              $generictype = 'SMOKE';
+              break;
+              case 'PIR' :
+              $generictype = 'PRESENCE';
+              break;
+              case 'CO2' :
+              $generictype = 'CO2';
+              break;
+              case 'KWATT' :
+              $generictype = 'CONSUMPTION';
+              break;
+              case 'WATT' :
+              $generictype = 'CONSUMPTION';
+              break;
+              case 'VOLT' :
+              $generictype = 'VOLTAGE';
+              break;
+              case 'CURRENT' :
+              $generictype = 'VOLTAGE';
+              break;
             }
-            // calcul valeur pour la temp et autres cas particuliers
-            if ($cmd == 'TEMP') {
-              if (substr($value,0,1) != 0) {
-                $value = '-' . hexdec(substr($value, -3));
-              } else {
-                $value = hexdec(substr($value, -3));
-              }
-            } else if (strpos($hexacmd,$cmd) !== false) {
-              $value = hexdec($value);
+            $rflinkCmd->setDisplay('generic_type',$generictype);
+            if (strpos($numcmd,$cmd) !== false) {
+              $rflinkCmd->setSubType('numeric');
+            } else {
+              $rflinkCmd->setSubType('string');
             }
-            if (strpos($divcmd,$cmd) !== false) {
-              $value = $value/10;
-            }
-            $rflinkCmd->setConfiguration('value', $value);
-            $rflinkCmd->save();
-            $rflinkCmd->event($value);
-            log::add('rflink', 'debug', 'Commande ' . $cmd . ' value ' . $value);
+            $rflinkCmd->setName( $cmd . ' - ' . $order );
           }
+          // calcul valeur pour la temp et autres cas particuliers
+          if ($cmd == 'TEMP') {
+            if (substr($value,0,1) != 0) {
+              $value = '-' . hexdec(substr($value, -3));
+            } else {
+              $value = hexdec(substr($value, -3));
+            }
+          } else if (strpos($hexacmd,$cmd) !== false) {
+            $value = hexdec($value);
+          }
+          if (strpos($divcmd,$cmd) !== false) {
+            $value = $value/10;
+          }
+          $rflinkCmd->setConfiguration('value', $value);
+          $rflinkCmd->save();
+          $rflinkCmd->event($value);
+          log::add('rflink', 'debug', 'Commande ' . $cmd . ' value ' . $value);
         }
       }
     }
-
   }
 
-  public static function saveGateway() {
-    $status = init('status');
-    config::save('gateway', $status,  'rflink');
-  }
+}
 
-  public static function saveInclude($mode) {
-    config::save('include_mode', $mode,  'rflink');
-    $state = 1;
-    if ($mode == 1) {
-      $state = 0;
-    }
-    event::add('rflink::controller.data.controllerState',
-    array(
-      'state' => $state
-    )
-    );
-  }
+public static function saveGateway() {
+  $status = init('status');
+  config::save('gateway', $status,  'rflink');
+}
 
-  public static function saveNetGate($value) {
-    config::save('netgate', $value,  'rflink');
+public static function saveInclude($mode) {
+  config::save('include_mode', $mode,  'rflink');
+  $state = 1;
+  if ($mode == 1) {
+    $state = 0;
   }
+  event::add('rflink::controller.data.controllerState',
+  array(
+    'state' => $state
+  )
+);
+}
 
-  public function preSave() {
-    if ($this->getConfiguration('idManuel')!='') {
-      $id = $this->getConfiguration('idManuel');
-      $protocol = $this->getConfiguration('protocolManuel');
-      log::add('rflink', 'debug', 'Création équipement ' . $id . ' en ' . $protocol);
-      $this->setLogicalId($protocol . '_' . $id);
-      $this->setConfiguration('protocol',$protocol);
-      $this->setConfiguration('id',$id);
-      $this->setConfiguration('protocolManuel',$protocol);
-      $this->setConfiguration('idManuel',$id);
-    }
+public static function saveNetGate($value) {
+  config::save('netgate', $value,  'rflink');
+}
+
+public function preSave() {
+  if ($this->getConfiguration('idManuel')!='') {
+    $id = $this->getConfiguration('idManuel');
+    $protocol = $this->getConfiguration('protocolManuel');
+    log::add('rflink', 'debug', 'Création équipement ' . $id . ' en ' . $protocol);
+    $this->setLogicalId($protocol . '_' . $id);
+    $this->setConfiguration('protocol',$protocol);
+    $this->setConfiguration('id',$id);
+    $this->setConfiguration('protocolManuel',$protocol);
+    $this->setConfiguration('idManuel',$id);
   }
+}
 
-  public static function getNetwork() {
-    $return = "{";
+public static function getNetwork() {
+  $return = "{";
     $i = 0;
     $net = explode(";", config::byKey('netgate','rflink'));
     foreach ($net as $value) {

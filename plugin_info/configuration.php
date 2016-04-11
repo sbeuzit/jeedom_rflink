@@ -189,7 +189,7 @@ $('.bt_check').on('click',function(){
     $('#div_alert').showAlert({message: data.result, level: 'danger'});
     return;
   } else {
-    window.location.reload();
+    window.location.href = 'index.php?v=d&p=plugin&id=rflink';
   }
 }
 });
