@@ -165,7 +165,8 @@ class rflink extends eqLogic {
     $gateway = config::byKey('gateLib','rflink');
     $actual = substr($gateway, -2);
     $test = $actual + 1;
-    $xml->load('http://www.nemcon.nl/blog2/fw/update.jsp?ver=1.1&rel=' . $test);
+    $xml->load('http://www.nemcon.nl/blog2/fw/update.jsp?ver=1.1&rel=40');
+    log::add('rflink','debug','Téléchargement' . print_r($xml,true) );
     log::add('rflink','debug','Recherche firmware ' . $test . ' actuel ' . $actual );
     $result = $xml->getElementsByTagName('Result');
     foreach ($result as $element) {
