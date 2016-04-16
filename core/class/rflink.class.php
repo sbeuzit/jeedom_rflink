@@ -174,7 +174,7 @@ class rflink extends eqLogic {
         $resource_path = realpath(dirname(__FILE__) . '/../../resources/rflink/RFLink.cpp.hex');
         $file = file_get_contents($result->getAttribute('Url'));
         log::add('rflink','debug','Téléchargement' . $result->getAttribute('Url') . ' pour ' . $resource_path );
-        file_put_contents('/tmp/rflink.zip',$resource_path);
+        file_put_contents($file,$resource_path);
         config::save('avaLib', $release,  'rflink');
         return true;
       }
