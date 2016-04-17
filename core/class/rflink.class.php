@@ -163,21 +163,24 @@ class rflink extends eqLogic {
   public static function check() {
     $xml = new DOMDocument();
     $gateway = config::byKey('gateLib','rflink');
-    $actual = substr($gateway, -2);
-    $test = $actual + 1;
-    $xml->load('http://www.nemcon.nl/blog2/fw/update.jsp?ver=1.1&rel=40');
-    log::add('rflink','debug','Téléchargement' . print_r($xml,true) );
-    log::add('rflink','debug','Recherche firmware ' . $test . ' actuel ' . $actual );
-    $result = $xml->getElementsByTagName('Result');
-    foreach ($result as $element) {
-      if ($element->getAttribute('Value') == '1') {
-        $resource_path = realpath(dirname(__FILE__) . '/../../resources/rflink/RFLink.cpp.hex');
-        $file = file_get_contents($result->getAttribute('Url'));
-        log::add('rflink','debug','Téléchargement' . $result->getAttribute('Url') . ' pour ' . $resource_path );
-        file_put_contents($file,$resource_path);
-        config::save('avaLib', $release,  'rflink');
-        return true;
-      }
+    $release = substr($gateway, -2);
+    $version = substr($gateway, -9, 3);
+    $url = 'http://www.nemcon.nl/blog2/fw/update.jsp?ver=' . $version . '&rel=' . $release;
+    $xml->load($url);
+    log::add('rflink','debug','Recherche firmware ' .  $url );
+
+    if ($xml->getElementsByTagName('Value')->item(0)->nodeValue == 1) {
+      //update dispo
+      $file = file_get_contents($xml->getElementsByTagName('Url')->item(0)->nodeValue);
+      $resource_path = realpath(dirname(__FILE__) . '/../../resources/rflink/RFLink.cpp.hex');
+      $release = explode("/fw/",$xml->getElementsByTagName('Url')->item(0)->nodeValue);
+      $release = explode("/",$release[1]);
+      $release = $release[0];
+      log::add('rflink','debug','Download ' . $xml->getElementsByTagName('Url')->item(0)->nodeValue . ' in ' . $resource_path . ' for release ' . $release);
+      exec('sudo rm ' . $resource_path);
+      file_put_contents($resource_path,$file);
+      config::save('avaLib', $release,  'rflink');
+      return true;
     }
   }
 
