@@ -343,12 +343,46 @@ class rflink extends eqLogic {
 
     //$id = init('id');
     //$protocol = $datas[2];
+    
+    /*
+    ID=9999         => device ID (often a rolling code and/or device channel number) (Hexadecimal)
+SWITCH=A16      => House/Unit code like A1, P2, B16 or a button number etc.
+CMD=ON          => Command (ON/OFF/ALLON/ALLOFF)
+SET_LEVEL=15    => Direct dimming level setting value (decimal value: 0-15)
+TEMP=9999       => Temperature (hexadecimal), high bit contains negative sign, needs division by 10 (0xC0 = 192 decimal = 19.2 degrees) 
+HUM=99          => Humidity (decimal value: 0-100 to indicate relative humidity in %)
+BARO=9999       => Barometric pressure (hexadecimal) 
+HSTATUS=99      => 0=Normal, 1=Comfortable, 2=Dry, 3=Wet
+BFORECAST=99    => 0=No Info/Unknown, 1=Sunny, 2=Partly Cloudy, 3=Cloudy, 4=Rain
+UV=9999         => UV intensity (hexadecimal)
+LUX=9999        => Light intensity (hexadecimal)
+BAT=OK          => Battery status indicator (OK/LOW)
+RAIN=1234       => Total rain in mm. (hexadecimal)  0x8d = 141 decimal = 14.1 mm  (needs division by 10)
+RAINRATE=1234   => Rain rate in mm. (hexadecimal)   0x8d = 141 decimal = 14.1 mm  (needs division by 10)
+WINSP=9999      => Wind speed in km. p/h (hexadecimal) needs division by 10 
+AWINSP=9999     => Average Wind speed in km. p/h (hexadecimal) needs division by 10 
+WINGS=9999      => Wind Gust in km. p/h (hexadecimal)
+WINDIR=123      => Wind direction (integer value from 0-15) reflecting 0-360 degrees in 22.5 degree steps
+WINCHL          => wind chill (hexadecimal, see TEMP)
+WINTMP=1234     => Wind meter temperature reading (hexadecimal, see TEMP)
+CHIME=123       => Chime/Doorbell melody number
+SMOKEALERT=ON   => ON/OFF
+PIR=ON          => ON/OFF
+CO2=1234        => CO2 air quality
+SOUND=1234      => Noise level
+KWATT=9999      => KWatt (hexadecimal)
+WATT=9999       => Watt (hexadecimal)
+DIST=1234       => Distance
+METER=1234      => Meter values (water/electricity etc.)
+VOLT=1234       => Voltage
+CURRENT=1234    => Current
+*/
     $i = 0;
     $switch = 0;
     $battery = 0;
-    $hexacmd = 'TEMP,BARO,UV,RAIN,RAINTOT,WINSP,AWINSP,WINGS,WINCHL,WINTMP';
-    $numcmd = 'TEMP,HUM,BARO,HSTATUS,BFORECAST,UV,RAIN,RAINTOT,WINSP,AWINSP,WINGS,WINDIR,WINCHL,WINTMP,CHIME';
-    $divcmd = 'TEMP,WINSP,AWINSP';
+    $hexacmd = 'TEMP,BARO,UV,LUX,,RAIN,RAINRATE,WINSP,AWINSP,WINGS,WINCHL,WINTMP,KWATT,WATT';
+    $numcmd = 'TEMP,HUM,BARO,HSTATUS,BFORECAST,UV,RAIN,RAINRATE,WINSP,AWINSP,WINGS,WINDIR,WINCHL,WINTMP,CHIME,CO2,SOUND,KWATT,WATT,DIST,METER,VOLT;CURRENT';
+    $divcmd = 'TEMP,RAIN,RAINRATE,RAINTOT,WINSP,AWINSP';
     $generictype = 'GENERIC';
     foreach ($datas as $value) {
       if ($i == 2) {
