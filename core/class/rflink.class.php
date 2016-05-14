@@ -60,7 +60,7 @@ class rflink extends eqLogic {
     return $return;
   }
 
-  public static function deamon_start($_debug = false) {
+  public static function deamon_start() {
     self::deamon_stop();
     $deamon_info = self::deamon_info();
     if ($deamon_info['launchable'] != 'ok') {
@@ -102,11 +102,8 @@ class rflink extends eqLogic {
     }
 
 
-    if ($_debug = true) {
-      $log = "1";
-    } else {
-      $log = "0";
-    }
+    $log = log::convertLogLevel(log::getLogLevel('rflink'));
+
     $sensor_path = realpath(dirname(__FILE__) . '/../../node');
     if ($usbGateway != "none") {
       exec('sudo chmod -R 777 ' . $usbGateway);
@@ -343,15 +340,15 @@ class rflink extends eqLogic {
 
     //$id = init('id');
     //$protocol = $datas[2];
-    
+
     /*
     ID=9999         => device ID (often a rolling code and/or device channel number) (Hexadecimal)
 SWITCH=A16      => House/Unit code like A1, P2, B16 or a button number etc.
 CMD=ON          => Command (ON/OFF/ALLON/ALLOFF)
 SET_LEVEL=15    => Direct dimming level setting value (decimal value: 0-15)
-TEMP=9999       => Temperature (hexadecimal), high bit contains negative sign, needs division by 10 (0xC0 = 192 decimal = 19.2 degrees) 
+TEMP=9999       => Temperature (hexadecimal), high bit contains negative sign, needs division by 10 (0xC0 = 192 decimal = 19.2 degrees)
 HUM=99          => Humidity (decimal value: 0-100 to indicate relative humidity in %)
-BARO=9999       => Barometric pressure (hexadecimal) 
+BARO=9999       => Barometric pressure (hexadecimal)
 HSTATUS=99      => 0=Normal, 1=Comfortable, 2=Dry, 3=Wet
 BFORECAST=99    => 0=No Info/Unknown, 1=Sunny, 2=Partly Cloudy, 3=Cloudy, 4=Rain
 UV=9999         => UV intensity (hexadecimal)
@@ -359,8 +356,8 @@ LUX=9999        => Light intensity (hexadecimal)
 BAT=OK          => Battery status indicator (OK/LOW)
 RAIN=1234       => Total rain in mm. (hexadecimal)  0x8d = 141 decimal = 14.1 mm  (needs division by 10)
 RAINRATE=1234   => Rain rate in mm. (hexadecimal)   0x8d = 141 decimal = 14.1 mm  (needs division by 10)
-WINSP=9999      => Wind speed in km. p/h (hexadecimal) needs division by 10 
-AWINSP=9999     => Average Wind speed in km. p/h (hexadecimal) needs division by 10 
+WINSP=9999      => Wind speed in km. p/h (hexadecimal) needs division by 10
+AWINSP=9999     => Average Wind speed in km. p/h (hexadecimal) needs division by 10
 WINGS=9999      => Wind Gust in km. p/h (hexadecimal)
 WINDIR=123      => Wind direction (integer value from 0-15) reflecting 0-360 degrees in 22.5 degree steps
 WINCHL          => wind chill (hexadecimal, see TEMP)

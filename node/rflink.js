@@ -5,7 +5,7 @@ var request = require('request');
 var urlJeedom = '';
 var gwAddress = '';
 var gwNetwork = '';
-var debug = '';
+var log = '';
 var gw = new Array();
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -16,7 +16,7 @@ process.argv.forEach(function(val, index, array) {
 		case 2 : urlJeedom = val; break;
 		case 3 : gwAddress = val; break;
 		case 4 : gwNetwork = val; break;
-		case 5 : debug = val; break;
+		case 5 : log = val; break;
 	}
 });
 
@@ -32,7 +32,7 @@ function saveValue(data) {
 	},
 	function (error, response, body) {
 		if (!error && response.statusCode == 200) {
-			if (debug == 1) {console.log((new Date()) + "Got response Value: " + response.statusCode);}
+			if (log == 'debug') {console.log((new Date()) + " - Got response Value : " + response.statusCode);}
 		}else{
 			console.log((new Date()) + " - SaveValue Error : "  + error );
 		}
@@ -44,7 +44,7 @@ function saveGateway(status) {
 	url = urlJeedom + "&messagetype=saveGateway&type=rflink&status="+status;
 	request(url, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
-			if (debug == 1) {console.log((new Date()) + "Got response saveSensor: " + response.statusCode);}
+			if (log == 'debug') {console.log((new Date()) + " - Got response saveSensor : " + response.statusCode);}
 		}
 	});
 }
@@ -105,7 +105,7 @@ if (gwNetwork != 'none') {
 			console.log((new Date()) + " - connected to network gateway at " + gwAddress + ":" + gwPort);
 			saveGateway('1');
 		}).on('data', function(rd) {
-			if (debug == 1) {console.log((new Date()) + " - "  + rd)};
+			if (log == 'debug') {console.log((new Date()) + " - "  + rd)};
 			saveValue(rd);
 		}).on('end', function() {
 			console.log((new Date()) + " - disconnected from network gateway");
@@ -129,18 +129,18 @@ if (gwAddress != 'none') {
 		baudrate: 57600,
 		parser: com.parsers.readline('\r\n')
 	});
-	gw['serial'].open();
+	//gw['serial'].open();
 	gw['serial'].on('open', function() {
 		console.log((new Date()) + " - connected to serial gateway at " + gwAddress);
 		saveGateway('1');
 	}).on('data', function(rd) {
-		if (debug == 1) {console.log((new Date()) + " - "  + rd)};
+		if (log == 'debug') {console.log((new Date()) + " - "  + rd)};
 		saveValue(rd);
 	}).on('end', function() {
 		console.log((new Date()) + " - disconnected from serial gateway");
 		saveGateway('0');
 	}).on('error', function(error) {
-		console.log((new Date()) + " - connection error - trying to reconnect");
+		console.log((new Date()) + " - connection error - trying to reconnect : " + error.message);
 		saveGateway('0');
 		setTimeout(function() {gw['serial'].open();}, 5000);
 	});
