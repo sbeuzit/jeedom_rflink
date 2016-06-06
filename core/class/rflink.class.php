@@ -578,6 +578,156 @@ CURRENT=1234    => Current
           $rflinkCmd->save();
         }
         return true;
+      } else if ($protocol == 'MiLightv1') {
+        $rtsid = 'ON' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création PAIR sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Appairement ' . $cmd );
+          $rflinkCmd->setConfiguration('value', 'PAIR');
+          $rflinkCmd->setConfiguration('request', 'PAIR');
+          $rflinkCmd->setIsVisible(0);
+          $rflinkCmd->save();
+        }
+        $rtsid = 'OFF' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd)) {
+          log::add('rflink', 'debug', 'Commande non existante, création ' . $cmd . ' sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($cmd);
+          $rflinkCmd->setType('info');
+          $rflinkCmd->setSubType('binary');
+          $rflinkCmd->setDisplay('generic_type','FLAP_STATE');
+          $rflinkCmd->setName( 'Statut ' . $cmd );
+        }
+        $rflinkCmd->setConfiguration('value', $value);
+        $rflinkCmd->setConfiguration('request', $request);
+        $rflinkCmd->save();
+        $rflinkCmd->event($value);
+        $cmId = $rflinkCmd->getId();
+
+        $rtsid = 'COLOR' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création UP sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setValue($cmId);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Montée ' . $cmd );
+          $rflinkCmd->setConfiguration('value', 'UP');
+          $rflinkCmd->setConfiguration('request', $cmd . ';UP');
+          $rflinkCmd->setDisplay('generic_type','FLAP_UP');
+          $rflinkCmd->save();
+        }
+
+        $rtsid = 'BRIGHT' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création DOWN sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setValue($cmId);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Descente ' . $cmd);
+          $rflinkCmd->setConfiguration('value', 'DOWN');
+          $rflinkCmd->setConfiguration('request', $cmd . ';DOWN');
+          $rflinkCmd->setDisplay('generic_type','FLAP_DOWN');
+          $rflinkCmd->save();
+        }
+
+        $rtsid = 'DISCO+' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création STOP sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setValue($cmId);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Stop ' . $cmd );
+          $rflinkCmd->setConfiguration('value', 'STOP');
+          $rflinkCmd->setConfiguration('request', $cmd . ';STOP');
+          $rflinkCmd->setDisplay('generic_type','FLAP_STOP');
+          $rflinkCmd->save();
+        }
+        $rtsid = 'DISCO-' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création STOP sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($rtsid);
+          $rflinkCmd->setValue($cmId);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'Stop ' . $cmd );
+          $rflinkCmd->setConfiguration('value', 'STOP');
+          $rflinkCmd->setConfiguration('request', $cmd . ';STOP');
+          $rflinkCmd->setDisplay('generic_type','FLAP_STOP');
+          $rflinkCmd->save();
+        }
+        $i = 0;
+        while ($i <= 8) {
+          $rtsid = 'MODE ' . $i . ' ' . $cmd;
+          $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$rtsid);
+          if (!is_object($rflinkCmd) && is_object($rflink)) {
+            log::add('rflink', 'debug', 'Commande non existante, création STOP sur ' . $nodeid);
+            $cmds = $rflink->getCmd();
+            $order = count($cmds);
+            $rflinkCmd = new rflinkCmd();
+            $rflinkCmd->setEqLogic_id($rflink->getId());
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setLogicalId($rtsid);
+            $rflinkCmd->setValue($cmId);
+            $rflinkCmd->setType('action');
+            $rflinkCmd->setSubType('other');
+            $rflinkCmd->setName( 'Stop ' . $cmd );
+            $rflinkCmd->setConfiguration('value', 'STOP');
+            $rflinkCmd->setConfiguration('request', $cmd . ';STOP');
+            $rflinkCmd->setDisplay('generic_type','FLAP_STOP');
+            $rflinkCmd->save();
+          }
+          $i++;
+        }
+
+        return true;
       }
       if ($value == 'OFF') {
         $request = $cmd . ';' . $value;
@@ -827,13 +977,46 @@ class rflinkCmd extends cmd {
 
       case 'action' :
       $request = $this->getConfiguration('request');
+      $eqLogic = $this->getEqLogic();
 
       switch ($this->getSubType()) {
         case 'slider':
-        $request = str_replace('#slider#', $_options['slider'], $request);
+        if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
+          if ($_options['slider'] == '100') {
+            $color = 'ff';
+          } else if ($_options['slider'] == '0') {
+            $color = '00';
+          } else {
+            $color = $_options['slider'];
+          }
+          $eqLogic->setConfiguration('light') = $color;
+          $eqLogic->save();
+          $color = $color . $eqLogic->getConfiguration('color');
+          $request = str_replace('#color#', $color, $request);
+        } else {
+          $request = str_replace('#slider#', $_options['slider'], $request);
+        }
         break;
         case 'color':
+        if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
+          if ($_options['color'] == '100') {
+            $color = 'ff';
+          } else if ($_options['color'] == '0') {
+            $color = '00';
+          } else {
+            $color = $_options['color'];
+          }
+          $eqLogic->setConfiguration('color') = $color;
+          $eqLogic->save();
+          $color = $eqLogic->getConfiguration('light') . $color;
+          $request = str_replace('#color#', $color, $request);
+        } else {
+          $request = str_replace('#color#', $_options['color'], $request);
+        }
         $request = str_replace('#color#', $_options['color'], $request);
+        if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
+          $eqLogic->setConfiguration('color') = $request;
+        }
         break;
         case 'message':
         if ($_options != null)  {
@@ -854,13 +1037,19 @@ class rflinkCmd extends cmd {
 
       }
 
-      $eqLogic = $this->getEqLogic();
-
       if ($request != 'PAIR') {
-        rflink::sendCommand(
-        $eqLogic->getConfiguration('protocol') ,
-        $eqLogic->getConfiguration('id') ,
-        $request );
+        if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
+          $eqLogic->setConfiguration('color') = $request;
+          rflink::sendCommand(
+          $eqLogic->getConfiguration('protocol') ,
+          $eqLogic->getConfiguration('id') ,
+          $request );
+        } else {
+          rflink::sendCommand(
+          $eqLogic->getConfiguration('protocol') ,
+          $eqLogic->getConfiguration('id') ,
+          $request );
+        }
       } else {
         rflink::sendCommand(
         $eqLogic->getConfiguration('protocol') ,
