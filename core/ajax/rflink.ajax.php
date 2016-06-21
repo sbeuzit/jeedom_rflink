@@ -48,6 +48,14 @@ try {
         ajax::success(rflink::controlController( 'REBOOT' ));
     }
 
+    if (init('action') == 'milightActive') {
+        ajax::success(rflink::controlController( 'milightnrf=on' ));
+    }
+
+    if (init('action') == 'send') {
+        ajax::success(rflink::echoController( init('command') ));
+    }
+
     throw new Exception(__('{{Aucune methode correspondante à}} : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {

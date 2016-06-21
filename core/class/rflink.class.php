@@ -245,6 +245,25 @@ class rflink extends eqLogic {
     }
   }
 
+  public static function echoController( $command ) {
+    if (config::byKey('nodeGateway', 'rflink') == 'none' || config::byKey('nodeGateway', 'rflink') == '') {
+      return false;
+    }
+    $urlNode = "127.0.0.1";
+
+    $msg = "11;" . $command . ";";
+    log::add('rflink', 'info', $msg);
+    $fp = fsockopen($urlNode, 8020, $errno, $errstr);
+    if (!$fp) {
+      echo "Service ne répond pas";
+      return false;
+    } else {
+      fwrite($fp, $msg);
+      fclose($fp);
+    }
+  }
+
+
   public static function sendToController( $protocol, $id, $request ) {
     if (config::byKey('nodeGateway', 'rflink') == 'none' || config::byKey('nodeGateway', 'rflink') == '') {
       return false;

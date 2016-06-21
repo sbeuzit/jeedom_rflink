@@ -74,6 +74,23 @@ if (!isConnect()) {
       </a></div>
       </div>
 
+      <div class="form-group">
+      <label class="col-lg-4 control-label">{{Milight}}</label>
+      <div class="col-lg-3">
+      <a class="btn btn-warning bt_milight"><i class="fa fa-bug"></i>
+        Activer
+      </a></div>
+      </div>
+
+      <div class="form-group">
+      <label class="col-lg-4 control-label">{{Envoi de données}}</label>
+      <div class="col-lg-3">
+        <input name='cmd' type='text' class='input_cmd' placeholder=''>
+      <a class="btn btn-warning bt_send"><i class="fa fa-bug"></i>
+        Envoyer
+      </a></div>
+      </div>
+
       <div id="div_local" class="form-group">
         <label class="col-lg-4 control-label">{{RFLink USB}} :</label>
         <div class="col-lg-4">
@@ -222,6 +239,50 @@ $('.bt_debug').on('click',function(){
   url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
   data: {
     action: "debug",
+  },
+  dataType: 'json',
+  global: false,
+  error: function (request, status, error) {
+    handleAjaxError(request, status, error);
+  },
+  success: function (data) { // si l'appel a bien fonctionné
+  if (data.state != 'ok') {
+    $('#div_alert').showAlert({message: data.result, level: 'danger'});
+    return;
+  }
+}
+});
+});
+
+$('.bt_milight').on('click',function(){
+  $.ajax({// fonction permettant de faire de l'ajax
+  type: "POST", // méthode de transmission des données au fichier php
+  url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
+  data: {
+    action: "milightActive",
+  },
+  dataType: 'json',
+  global: false,
+  error: function (request, status, error) {
+    handleAjaxError(request, status, error);
+  },
+  success: function (data) { // si l'appel a bien fonctionné
+  if (data.state != 'ok') {
+    $('#div_alert').showAlert({message: data.result, level: 'danger'});
+    return;
+  }
+}
+});
+});
+
+$('.bt_send').on('click',function(){
+  var cmd = $('.input_send').value;
+  $.ajax({// fonction permettant de faire de l'ajax
+  type: "POST", // méthode de transmission des données au fichier php
+  url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
+  data: {
+    action: "send",
+    command: cmd,
   },
   dataType: 'json',
   global: false,
