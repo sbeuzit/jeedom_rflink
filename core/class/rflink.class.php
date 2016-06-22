@@ -1035,7 +1035,7 @@ class rflinkCmd extends cmd {
       if ($request != 'PAIR') {
         if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
           $color = $eqLogic->getConfiguration('color') . $eqLogic->getConfiguration('bright');
-          $request = str_replace('#color#', $color, $eqLogic->getConfiguration('request'));
+          $request = str_replace('#color#', $color, $this->getConfiguration('request'));
           rflink::sendCommand(
           $eqLogic->getConfiguration('protocol') ,
           $eqLogic->getConfiguration('id') ,
