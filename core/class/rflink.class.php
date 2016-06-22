@@ -998,7 +998,8 @@ class rflinkCmd extends cmd {
         case 'slider':
         if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
           if ($eqLogic->getConfiguration('milight') == 'color') {
-            $color = substr("00".dechex($_options['slider']),-2);
+            $color = dechex($_options['slider']);
+            $color = substr('00' . $color,-2);
             $eqLogic->setConfiguration('color') = $color;
             $eqLogic->save();
           } else {
