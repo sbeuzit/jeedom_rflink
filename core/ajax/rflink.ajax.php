@@ -53,7 +53,7 @@ try {
     }
 
     if (init('action') == 'send') {
-        ajax::success(rflink::echoController( init('command') ));
+        ajax::success(rflink::echoController( init('value') ));
     }
 
     throw new Exception(__('{{Aucune methode correspondante à}} : ', __FILE__) . init('action'));

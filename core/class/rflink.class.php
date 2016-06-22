@@ -250,7 +250,7 @@ class rflink extends eqLogic {
     }
     $urlNode = "127.0.0.1";
 
-    $msg = "11;" . $command . ";";
+    $msg = "11;" . $command;
     log::add('rflink', 'info', $msg);
     $fp = fsockopen($urlNode, 8020, $errno, $errstr);
     if (!$fp) {

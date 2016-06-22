@@ -85,7 +85,7 @@ if (!isConnect()) {
       <div class="form-group">
       <label class="col-lg-4 control-label">{{Envoi de données}}</label>
       <div class="col-lg-3">
-        <input name='cmd' type='text' class='input_cmd' placeholder=''>
+        <input name='input_cmd' type='text' class='input_cmd' placeholder=''>
       <a class="btn btn-warning bt_send"><i class="fa fa-bug"></i>
         Envoyer
       </a></div>
@@ -276,13 +276,13 @@ $('.bt_milight').on('click',function(){
 });
 
 $('.bt_send').on('click',function(){
-  var cmd = $('.input_send').value;
+  var cmd = $('.input_cmd').val();
   $.ajax({// fonction permettant de faire de l'ajax
   type: "POST", // méthode de transmission des données au fichier php
   url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
   data: {
     action: "send",
-    command: cmd,
+    value: cmd,
   },
   dataType: 'json',
   global: false,
