@@ -8,12 +8,12 @@ $eqLogics = eqLogic::byType('rflink');
 $state = config::byKey('include_mode', 'rflink');
 echo '<div id="div_inclusionAlert"></div>';
 if ($state == 1) {
-			echo '<div class="alert jqAlert alert-warning" id="div_inclusionAlert" style="margin : 0px 5px 15px 15px; padding : 7px 35px 7px 15px;">{{Vous êtes en mode inclusion. Cliquez à nouveau sur le bouton d\'inclusion pour sortir de ce mode}}</div>';
-		}
+  echo '<div class="alert jqAlert alert-warning" id="div_inclusionAlert" style="margin : 0px 5px 15px 15px; padding : 7px 35px 7px 15px;">{{Vous êtes en mode inclusion. Cliquez à nouveau sur le bouton d\'inclusion pour sortir de ce mode}}</div>';
+}
 ?>
 
 <div class="row row-overflow">
-  <div class="col-lg-2 col-md-3 col-sm-4">
+  <div class="col-lg-2 col-sm-3 col-sm-4">
     <div class="bs-sidebar">
       <ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
         <a class="btn btn-default eqLogicAction" style="width : 100%;margin-top : 5px;margin-bottom: 5px;" data-action="add"><i class="fa fa-plus-circle"></i> {{Ajouter un équipement}}</a>
@@ -104,25 +104,33 @@ if ($state == 1) {
       <?php } ?>
     </div>
 
-
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
-      <div class="row">
-        <div class="col-sm-6">
+
+      <a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
+      <a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
+        <li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
+      </ul>
+
+      <div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
+        <div role="tabpanel" class="tab-pane active" id="eqlogictab">
           <form class="form-horizontal">
             <fieldset>
               <legend><i class="fa fa-arrow-circle-left eqLogicAction cursor" data-action="returnToThumbnailDisplay"></i>  {{Général}}
                 <i class='fa fa-cogs eqLogicAction pull-right cursor expertModeVisible' data-action='configure'></i>
               </legend>
               <div class="form-group">
-                <label class="col-md-2 control-label">{{Nom du Node}}</label>
-                <div class="col-md-3">
+                <label class="col-sm-3 control-label">{{Nom du Node}}</label>
+                <div class="col-sm-3">
                   <input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
                   <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement rflink}}"/>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-md-2 control-label" >{{Objet parent}}</label>
-                <div class="col-md-3">
+                <label class="col-sm-3 control-label" >{{Objet parent}}</label>
+                <div class="col-sm-3">
                   <select class="form-control eqLogicAttr" data-l1key="object_id">
                     <option value="">{{Aucun}}</option>
                     <?php
@@ -134,8 +142,8 @@ if ($state == 1) {
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-md-2 control-label">{{Catégorie}}</label>
-                <div class="col-md-8">
+                <label class="col-sm-3 control-label">{{Catégorie}}</label>
+                <div class="col-sm-8">
                   <?php
                   foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
                     echo '<label class="checkbox-inline">';
@@ -147,66 +155,58 @@ if ($state == 1) {
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label" ></label>
-                <div class="col-sm-9">
-                  <input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="{{Activer}}" data-l1key="isEnable" checked/>
-                  <input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="{{Visible}}" data-l1key="isVisible" checked/>
+                <label class="col-sm-3 control-label" ></label>
+                <div class="col-sm-8">
+                  <label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
+                  <label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
                 </div>
               </div>
               <div class="form-group expertModeVisible">
-                <label class="col-md-2 control-label">{{Délai max entre 2 messages}}</label>
-                <div class="col-md-8">
+                <label class="col-sm-3 control-label">{{Délai max entre 2 messages}}</label>
+                <div class="col-sm-3">
                   <input class="eqLogicAttr form-control" data-l1key="timeout" placeholder="Délai maximum autorisé entre 2 messages (en mn)"/>
                 </div>
               </div>
               <div class="form-group expertModeVisible">
-                <label class="col-md-2 control-label">{{Type de piles}}</label>
-                <div class="col-md-8">
+                <label class="col-sm-3 control-label">{{Type de piles}}</label>
+                <div class="col-sm-3">
                   <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" placeholder="Doit être indiqué sous la forme : 3x AA"/>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{Commentaire}}</label>
-                <div class="col-md-8">
+                <label class="col-sm-3 control-label">{{Commentaire}}</label>
+                <div class="col-sm-3">
                   <textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="commentaire" ></textarea>
                 </div>
               </div>
 
-            </fieldset>
-
-          </form>
-        </div>
-
-        <div id="infoNode" class="col-sm-6">
-          <form class="form-horizontal">
-            <fieldset>
-              <legend><i class="fa fa-info-circle"></i>  {{Configuration}}</legend>
-
               <div class="form-group">
-                <label class="col-md-2 control-label">{{Protocole}}</label>
-                <div class="col-md-3">
+                <label class="col-sm-3 control-label">{{Protocole}}</label>
+                <div class="col-sm-3">
                   <input type="text" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="protocol" placeholder="{{Protocole rflink}}"/>
                 </div>
+                </div>
 
-                <label class="col-md-2 control-label">{{Identifiant}}</label>
-                <div class="col-md-3">
+                  <div class="form-group">
+                <label class="col-sm-3 control-label">{{Identifiant}}</label>
+                <div class="col-sm-3">
                   <input type="text" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="id" placeholder="{{Id rflink}}"/>
+                </div>
                 </div>
 
               </div>
 
               <div class="form-group">
-                <label class="col-md-2 control-label">{{Dernière Activité}}</label>
-                <div class="col-md-3">
+                <label class="col-sm-3 control-label">{{Dernière Activité}}</label>
+                <div class="col-sm-3">
                   <span class="eqLogicAttr" data-l1key="configuration" data-l2key="updatetime"></span>
                 </div>
               </div>
 
 
-              <legend>{{Paramètres}}</legend>
               <div class="form-group">
-                <label class="col-md-2 control-label">{{Catégorie du noeud}}</label>
-                <div class="col-md-3">
+                <label class="col-sm-3 control-label">{{Catégorie du noeud}}</label>
+                <div class="col-sm-3">
                   <select id="sel_icon" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">
                     <option value="">{{Aucun}}</option>
                     <option value="433">{{RF433}}</option>
@@ -250,19 +250,8 @@ if ($state == 1) {
             </fieldset>
           </form>
         </div>
-      </div>
 
-      <legend><i class="fa fa-cloud"></i>  {{Informations}}</legend>
-
-      <form class="form-horizontal">
-        <fieldset>
-          <div class="form-actions">
-            <a class="btn btn-danger eqLogicAction" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
-            <a class="btn btn-success eqLogicAction" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
-          </div>
-        </fieldset>
-      </form>
-      <br />
+<div role="tabpanel" class="tab-pane" id="commandtab">
 
       <form class="form-horizontal">
         <fieldset>
@@ -292,17 +281,10 @@ if ($state == 1) {
         </tbody>
       </table>
 
-      <form class="form-horizontal">
-        <fieldset>
-          <div class="form-actions">
-            <a class="btn btn-danger eqLogicAction" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
-            <a class="btn btn-success eqLogicAction" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
-          </div>
-        </fieldset>
-      </form>
-
     </div>
-  </div>
+    </div>
+    </div>
+    </div>
 
   <?php include_file('desktop', 'rflink', 'js', 'rflink'); ?>
   <?php include_file('core', 'plugin.template', 'js'); ?>
