@@ -238,7 +238,6 @@ if ($state == 1) {
                 </div>
               </div>
 
-            </div>
             <div class="form-group">
               <div style="text-align: center">
                 <img name="icon_visu" src="" width="160" height="200"/>
@@ -250,7 +249,7 @@ if ($state == 1) {
         </form>
       </div>
 
-      <div role="tabpanel" class="tab-pane" id="commandtab">
+  <div role="tabpanel" class="tab-pane" id="commandtab">
 
         <table id="table_cmd" class="table table-bordered table-condensed">
           <thead>
