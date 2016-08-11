@@ -252,16 +252,6 @@ if ($state == 1) {
 
       <div role="tabpanel" class="tab-pane" id="commandtab">
 
-        <form class="form-horizontal">
-          <fieldset>
-            <div class="form-actions">
-              <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkInfo"><i class="fa fa-plus-circle"></i> {{Ajouter une commande info}}</a>
-              <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
-            </div>
-          </fieldset>
-        </form>
-        <br />
-
         <table id="table_cmd" class="table table-bordered table-condensed">
           <thead>
             <tr>
@@ -279,6 +269,11 @@ if ($state == 1) {
 
           </tbody>
         </table>
+
+        <div class="form-actions">
+          <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkInfo"><i class="fa fa-plus-circle"></i> {{Ajouter une commande info}}</a>
+          <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+        </div>
 
       </div>
     </div>
