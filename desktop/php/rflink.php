@@ -185,15 +185,13 @@ if ($state == 1) {
                 <div class="col-sm-3">
                   <input type="text" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="protocol" placeholder="{{Protocole rflink}}"/>
                 </div>
-                </div>
+              </div>
 
-                  <div class="form-group">
+              <div class="form-group">
                 <label class="col-sm-3 control-label">{{Identifiant}}</label>
                 <div class="col-sm-3">
                   <input type="text" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="id" placeholder="{{Id rflink}}"/>
                 </div>
-                </div>
-
               </div>
 
               <div class="form-group">
@@ -238,61 +236,62 @@ if ($state == 1) {
                     <option value="volet">{{Volet}}</option>
                   </select>
                 </div>
-
-              </div>
-              <div class="form-group">
-                <div style="text-align: center">
-                  <img name="icon_visu" src="" width="160" height="200"/>
-                </div>
               </div>
 
+            </div>
+            <div class="form-group">
+              <div style="text-align: center">
+                <img name="icon_visu" src="" width="160" height="200"/>
+              </div>
+            </div>
 
-            </fieldset>
-          </form>
-        </div>
 
-<div role="tabpanel" class="tab-pane" id="commandtab">
+          </fieldset>
+        </form>
+      </div>
 
-      <form class="form-horizontal">
-        <fieldset>
-          <div class="form-actions">
-            <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkInfo"><i class="fa fa-plus-circle"></i> {{Ajouter une commande info}}</a>
-            <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
-          </div>
-        </fieldset>
-      </form>
-      <br />
+      <div role="tabpanel" class="tab-pane" id="commandtab">
 
-      <table id="table_cmd" class="table table-bordered table-condensed">
-        <thead>
-          <tr>
-            <th style="width: 50px;">#</th>
-            <th style="width: 150px;">{{Nom}}</th>
-            <th style="width: 110px;">{{Type}}</th>
-            <th style="width: 110px;">{{Capteur}}</th>
-            <th style="width: 110px;">{{Valeur}}</th>
-            <th style="width: 100px;">{{Donnée}}</th>
-            <th style="width: 200px;">{{Paramètres}}</th>
-            <th style="width: 100px;"></th>
-          </tr>
-        </thead>
-        <tbody>
+        <form class="form-horizontal">
+          <fieldset>
+            <div class="form-actions">
+              <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkInfo"><i class="fa fa-plus-circle"></i> {{Ajouter une commande info}}</a>
+              <a class="btn btn-success btn-sm cmdAction" id="bt_addrflinkAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+            </div>
+          </fieldset>
+        </form>
+        <br />
 
-        </tbody>
-      </table>
+        <table id="table_cmd" class="table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th style="width: 50px;">#</th>
+              <th style="width: 150px;">{{Nom}}</th>
+              <th style="width: 110px;">{{Type}}</th>
+              <th style="width: 110px;">{{Capteur}}</th>
+              <th style="width: 110px;">{{Valeur}}</th>
+              <th style="width: 100px;">{{Donnée}}</th>
+              <th style="width: 200px;">{{Paramètres}}</th>
+              <th style="width: 100px;"></th>
+            </tr>
+          </thead>
+          <tbody>
 
+          </tbody>
+        </table>
+
+      </div>
     </div>
-    </div>
-    </div>
-    </div>
+  </div>
+</div>
 
-  <?php include_file('desktop', 'rflink', 'js', 'rflink'); ?>
-  <?php include_file('core', 'plugin.template', 'js'); ?>
+<?php include_file('desktop', 'rflink', 'js', 'rflink'); ?>
+<?php include_file('core', 'plugin.template', 'js'); ?>
 
-  <script>
-  $( "#sel_icon" ).change(function(){
-    var text = 'plugins/rflink/doc/images/node_' + $("#sel_icon").val() + '.png';
-    //$("#icon_visu").attr('src',text);
-    document.icon_visu.src=text;
-  });
-  </script>
+<script>
+$( "#sel_icon" ).change(function(){
+  var text = 'plugins/rflink/doc/images/node_' + $("#sel_icon").val() + '.png';
+  //$("#icon_visu").attr('src',text);
+  document.icon_visu.src=text;
+});
+</script>
