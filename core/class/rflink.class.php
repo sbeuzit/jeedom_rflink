@@ -597,6 +597,7 @@ class rflink extends eqLogic {
         }
         return true;
       } else if ($protocol == 'MiLightv1') {
+        //20;12;MiLightv1;ID=F746;SWITCH=00;RGBW=3e90;CMD=COLOR;
 
         $milid = 'ON' . $cmd;
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$milid);
@@ -651,6 +652,25 @@ class rflink extends eqLogic {
           $rflinkCmd->setSubType('other');
           $rflinkCmd->setName( 'Off ' . $cmd );
           $rflinkCmd->setConfiguration('request', $cmd.';#color#;OFF');
+          $rflinkCmd->setConfiguration('id', $cmd);
+          $rflinkCmd->save();
+        }
+
+        $milid = 'ALLOFF' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$milid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création All Off sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($milid);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'All Off ' . $cmd );
+          $rflinkCmd->setConfiguration('request', $cmd.';#color#;ALLOFF');
           $rflinkCmd->setConfiguration('id', $cmd);
           $rflinkCmd->save();
         }
@@ -713,7 +733,7 @@ class rflink extends eqLogic {
           $rflinkCmd->setConfiguration('milight', 'bright');
           $rflinkCmd->setConfiguration('id', $cmd);
           $rflinkCmd->setConfiguration('minValue', 0);
-          $rflinkCmd->setConfiguration('maxValue', 255);
+          $rflinkCmd->setConfiguration('maxValue', 32);
           $rflinkCmd->save();
         }
 
@@ -1057,12 +1077,12 @@ class rflinkCmd extends cmd {
         case 'slider':
         if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
           if ($eqLogic->getConfiguration('milight') == 'color') {
-            $color = substr("00".dechex($_options['slider']),-2);
+            $color = dechex($_options['slider']);
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'color_val'.$this->getConfiguration('id'));
             $rflinkCmd->setConfiguration('value', $color);
             $rflinkCmd->save();
           } else {
-            $color = substr("00".dechex($_options['slider']*8),-2);
+            $color = dechex($_options['slider']*8);
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'bright_val'.$this->getConfiguration('id'));
             $rflinkCmd->setConfiguration('value', $color);
             $rflinkCmd->save();
