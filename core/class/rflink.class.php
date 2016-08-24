@@ -617,6 +617,25 @@ class rflink extends eqLogic {
           $rflinkCmd->save();
         }
 
+        $milid = 'ALLON' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$milid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création All On sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($milid);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('other');
+          $rflinkCmd->setName( 'All On ' . $cmd );
+          $rflinkCmd->setConfiguration('request', $cmd.';#color#;ALLON');
+          $rflinkCmd->setConfiguration('id', $cmd);
+          $rflinkCmd->save();
+        }
+
         $milid = 'OFF' . $cmd;
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$milid);
         if (!is_object($rflinkCmd) && is_object($rflink)) {
@@ -673,6 +692,28 @@ class rflink extends eqLogic {
           $rflinkCmd->setSubType('other');
           $rflinkCmd->setName( 'Valeur Couleur ' . $cmd);
           $rflinkCmd->setConfiguration('value', '00');
+          $rflinkCmd->save();
+        }
+
+        $milid = 'BRIGHT' . $cmd;
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($rflink->getId(),$milid);
+        if (!is_object($rflinkCmd) && is_object($rflink)) {
+          log::add('rflink', 'debug', 'Commande non existante, création Brightness sur ' . $nodeid);
+          $cmds = $rflink->getCmd();
+          $order = count($cmds);
+          $rflinkCmd = new rflinkCmd();
+          $rflinkCmd->setEqLogic_id($rflink->getId());
+          $rflinkCmd->setEqType('rflink');
+          $rflinkCmd->setOrder($order);
+          $rflinkCmd->setLogicalId($milid);
+          $rflinkCmd->setType('action');
+          $rflinkCmd->setSubType('slider');
+          $rflinkCmd->setName( 'Luminosité ' . $cmd );
+          $rflinkCmd->setConfiguration('request', $cmd.';#color#;BRIGHT');
+          $rflinkCmd->setConfiguration('milight', 'bright');
+          $rflinkCmd->setConfiguration('id', $cmd);
+          $rflinkCmd->setConfiguration('minValue', 0);
+          $rflinkCmd->setConfiguration('maxValue', 255);
           $rflinkCmd->save();
         }
 
@@ -1046,10 +1087,8 @@ class rflinkCmd extends cmd {
         }
         else
         $request = 1;
-
         break;
         default : $request == null ?  1 : $request;
-
       }
 
       if ($request != 'PAIR') {
@@ -1088,16 +1127,9 @@ class rflinkCmd extends cmd {
         '0123;0;PAIR' );
       }
 
-
-
       $result = $request;
-
       return $result;
     }
     return true;
   }
-
-
-
-  /*     * **********************Getteur Setteur*************************** */
 }
