@@ -39,6 +39,11 @@ class rflink extends eqLogic {
     return $return;
   }
 
+  public function postUpdate() {
+    $nodeid = $this->getConfiguration('protocol') . '_' . $this->getConfiguration('id');
+    $this->setLogicalId($nodeid);
+  }
+
   public static function deamon_info() {
     $return = array();
     $return['log'] = 'rflink_node';
