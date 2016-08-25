@@ -1081,7 +1081,7 @@ class rflinkCmd extends cmd {
       switch ($this->getSubType()) {
         case 'slider':
         if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
-          if ($eqLogic->getConfiguration('milight') == 'color') {
+          if ($this->getConfiguration('milight') == 'color') {
             $color = substr(dechex($_options['slider']),-2);
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'color_val'.$this->getConfiguration('id'));
             $rflinkCmd->setConfiguration('value', $color);
