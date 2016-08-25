@@ -23,4 +23,9 @@ function rflink_install() {
 		exec('cd ' . $sensor_path . '; rm -rf node_modules');
 }
 
+function rflink_update() {
+    $sensor_path = dirname(__FILE__) . '/../node';
+		exec('cd ' . $sensor_path . '; rm -rf node_modules');
+}
+
 ?>
