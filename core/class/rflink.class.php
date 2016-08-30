@@ -93,18 +93,12 @@ class rflink extends eqLogic {
     } else {
       $net = 'none';
     }
-
-
-    if (config::byKey('jeeNetwork::mode') != 'master') { //Je suis l'esclave
-      $url  = config::byKey('jeeNetwork::master::ip') . '/core/api/jeeApi.php?api=' . config::byKey('jeeNetwork::master::apikey');
+    
+    if (!config::byKey('internalPort')) {
+      $url = config::byKey('internalProtocol') . config::byKey('internalAddr') . config::byKey('internalComplement') . '/core/api/jeeApi.php?api=' . config::byKey('api');
     } else {
-      if (!config::byKey('internalPort')) {
-        $url = config::byKey('internalProtocol') . config::byKey('internalAddr') . config::byKey('internalComplement') . '/core/api/jeeApi.php?api=' . config::byKey('api');
-      } else {
-        $url = config::byKey('internalProtocol') . config::byKey('internalAddr'). ':' . config::byKey('internalPort') . config::byKey('internalComplement') . '/core/api/jeeApi.php?api=' . config::byKey('api');
-      }
+      $url = config::byKey('internalProtocol') . config::byKey('internalAddr'). ':' . config::byKey('internalPort') . config::byKey('internalComplement') . '/core/api/jeeApi.php?api=' . config::byKey('api');
     }
-
 
     $log = log::convertLogLevel(log::getLogLevel('rflink'));
 

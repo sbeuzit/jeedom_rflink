@@ -131,34 +131,6 @@ if (!isConnect()) {
       </div>
     </fieldset>
   </form>
-  <?php
-  if (config::byKey('jeeNetwork::mode') == 'master') {
-    foreach (jeeNetwork::byPlugin('rflink') as $jeeNetwork) {
-      ?>
-      <form class="form-horizontal slaveConfig" data-slave_id="<?php echo $jeeNetwork->getId(); ?>">
-        <fieldset>
-          <legend>{{RFlink sur l'esclave}} <?php echo $jeeNetwork->getName() ?></legend>
-          <div class="form-group">
-            <label class="col-lg-4 control-label">{{RFLink USB}}</label>
-            <div class="col-lg-4">
-              <select class="slaveConfigKey form-control" data-l1key="nodeGateway">
-                <option value="none">{{Aucun}}</option>
-                <?php
-                foreach ($jeeNetwork->sendRawRequest('jeedom::getUsbMapping', array('gpio' => true)) as $name => $value) {
-                  echo '<option value="' . $name . '">' . $name . ' (' . $value . ')</option>';
-                }
-                ?>
-              </select>
-            </div>
-          </div>
-
-        </fieldset>
-      </form>
-      <?php
-    }
-  }
-  ?>
-
 
 
   <script>
