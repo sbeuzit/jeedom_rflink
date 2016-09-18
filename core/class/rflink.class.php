@@ -216,12 +216,12 @@ class rflink extends eqLogic {
   }
 
   public static function sendCommand( $protocol, $id, $request ) {
-    foreach (jeeNetwork::byPlugin('rflink') as $jeeNetwork) {
+    /*foreach (jeeNetwork::byPlugin('rflink') as $jeeNetwork) {
       $jsonrpc = $jeeNetwork->getJsonRpc();
       if (!$jsonrpc->sendRequest('sendToController', array('plugin' => 'rflink', 'protocol' => $protocol, 'id' => $id, 'request' => $request))) {
         throw new Exception($jsonrpc->getError(), $jsonrpc->getErrorCode());
       }
-    }
+    }*/
     rflink::sendToController($protocol,$id,$request);
   }
 
