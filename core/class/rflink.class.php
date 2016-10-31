@@ -93,12 +93,8 @@ class rflink extends eqLogic {
     } else {
       $net = 'none';
     }
-    
-    if (!config::byKey('internalPort')) {
-      $url = config::byKey('internalProtocol') . config::byKey('internalAddr') . config::byKey('internalComplement') . '/core/api/jeeApi.php?api=' . config::byKey('api');
-    } else {
-      $url = config::byKey('internalProtocol') . config::byKey('internalAddr'). ':' . config::byKey('internalPort') . config::byKey('internalComplement') . '/core/api/jeeApi.php?api=' . config::byKey('api');
-    }
+
+    $url = network::getNetworkAccess('internal') . '/plugins/rflink/core/api/rflink.php?apikey=' . jeedom::getApiKey('rflink');
 
     $log = log::convertLogLevel(log::getLogLevel('rflink'));
 
@@ -335,8 +331,7 @@ class rflink extends eqLogic {
     return true;
   }
 
-  public static function saveValue() {
-    $json = file_get_contents('php://input');
+  public static function saveValue($json) {
     //log::add('rflink', 'debug', 'Body ' . print_r($json,true));
     $body = json_decode($json, true);
     $data = $body['data'];
@@ -991,8 +986,7 @@ if (!is_object($rflinkCmd) && is_object($rflink)) {
 
 }
 
-public static function saveGateway() {
-  $status = init('status');
+public static function saveGateway($status) {
   config::save('gateway', $status,  'rflink');
 }
 
@@ -1025,36 +1019,6 @@ public function preSave() {
     $this->setConfiguration('idManuel',$id);
   }
 }
-
-public static function getNetwork() {
-  $return = "{";
-    $i = 0;
-    $net = explode(";", config::byKey('netgate','rflink'));
-    foreach ($net as $value) {
-      if (strpos($value,':') === false) {
-        throw new Exception(__('Saisie non valide pour la gateway réseau : ', __FILE__) . $value);
-      }
-      $gate = explode(":", $value);
-      if ($return != "{") {
-        $return .= ",";
-      }
-      $return .= "'net" . $i . "':{'addr':'" . $gate[0] . "','port':'" . $gate[1] . "'}";
-      $i++;
-    }
-    $return .= "}";
-    print $return;
-  }
-
-  public static function event() {
-
-    $messageType = init('messagetype');
-    switch ($messageType) {
-      case 'saveValue' : self::saveValue(); break;
-      case 'saveGateway' : self::saveGateway(); break;
-      case 'getNetwork' : self::getNetwork(); break;
-    }
-
-  }
 
 }
 
