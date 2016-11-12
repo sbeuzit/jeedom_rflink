@@ -36,7 +36,7 @@ if (!isConnect()) {
         echo '<div class="form-group">
         <label class="col-lg-4 control-label">{{Firmware installé}}</label>
         <div class="col-lg-3">';
-        echo "Mettre à jour en R" . $release;
+        echo $gateway;
         echo '</div>
         </div>';
         echo '<div class="form-group">
@@ -97,6 +97,7 @@ if (!isConnect()) {
         <div class="col-lg-4">
           <select style="margin-top:5px" class="configKey form-control" data-l1key="nodeGateway">
             <option value="none">{{Aucun}}</option>
+            <option value="network">{{Réseau}}</option>
             <?php
             foreach (jeedom::getUsbMapping('', true) as $name => $value) {
               echo '<option value="' . $name . '">' . $name . ' (' . $value . ')</option>';
