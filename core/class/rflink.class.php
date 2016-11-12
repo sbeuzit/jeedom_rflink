@@ -379,16 +379,18 @@ public static function deamon_start() {
     }
     log::add('rflink', 'info', 'Lancement du démon rflink');
 
-    if (config::byKey('nodeGateway', 'rflink') != 'none' && config::byKey('nodeGateway', 'rflink') != '') {
-        if (config::byKey('nodeGateway', 'rflink') == 'acm') {
-            $usbGateway = "/dev/ttyACM0";
-        } else {
-            $usbGateway = jeedom::getUsbMapping(config::byKey('nodeGateway', 'rflink'));
-        }
-        if ($usbGateway == '' ) {
-            throw new Exception(__('Le port : n\'existe pas', __FILE__));
-        }
+    if (config::byKey('nodeGateway', 'rflink') == 'acm') {
+        $usbGateway = "/dev/ttyACM0";
+    } else if (config::byKey('nodeGateway', 'rflink') == 'network') {
+        $usbGateway = 'network';
+    } else {
+        $usbGateway = jeedom::getUsbMapping(config::byKey('nodeGateway', 'rflink'));
     }
+    if ($usbGateway == '' ) {
+        throw new Exception(__('Le port : n\'existe pas', __FILE__));
+    }
+
+    $net = config::byKey('nodeGateway', 'rflink', '0');
 
     $url = network::getNetworkAccess('internal') . '/plugins/rflink/core/api/rflink.php?apikey=' . jeedom::getApiKey('rflink');
 
