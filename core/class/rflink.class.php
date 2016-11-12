@@ -390,7 +390,7 @@ public static function deamon_start() {
         throw new Exception(__('Le port : n\'existe pas', __FILE__));
     }
 
-    $net = config::byKey('nodeGateway', 'rflink', '0');
+    $net = config::byKey('netGateway', 'rflink', 'none');
 
     $url = network::getNetworkAccess('internal') . '/plugins/rflink/core/api/rflink.php?apikey=' . jeedom::getApiKey('rflink');
 
@@ -400,7 +400,7 @@ public static function deamon_start() {
     if ($usbGateway != "none") {
         exec('sudo chmod -R 777 ' . $usbGateway);
     }
-    $cmd = 'nice -n 19 nodejs ' . $sensor_path . '/rflink.js ' . $url . ' ' . $usbGateway . ' "' . $net . '" ' . $log;
+    $cmd = 'nice -n 19 nodejs ' . $sensor_path . '/rflink.js ' . $url . ' ' . $usbGateway . ' ' . $net . ' ' . $log;
 
     log::add('rflink', 'debug', 'Lancement démon rflink : ' . $cmd);
 
