@@ -36,7 +36,7 @@ class rflink extends eqLogic {
             //update dispo
             $file = file_get_contents($xml->getElementsByTagName('Url')->item(0)->nodeValue);
             $resource_path = realpath(dirname(__FILE__) . '/../../resources/rflink/RFLink.cpp.hex');
-            $release = substr("http://www.nemcon.nl/blog2/fw/","",substr("/RFLink.cpp.hex","",$xml->getElementsByTagName('Url')->item(0)->nodeValue));
+            $release = str_replace("http://www.nemcon.nl/blog2/fw/","",str_replace("/RFLink.cpp.hex","",$xml->getElementsByTagName('Url')->item(0)->nodeValue));
             log::add('rflink','debug','Download ' . $xml->getElementsByTagName('Url')->item(0)->nodeValue . ' in ' . $resource_path . ' for release ' . $release);
             exec('sudo rm ' . $resource_path);
             file_put_contents($resource_path,$file);
