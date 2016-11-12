@@ -31,18 +31,19 @@ if (!isConnect()) {
       <?php
 
       if (jeedom::isCapable('sudo')) {
-        $gateway = config::byKey('gateLib','rflink');
-        $actual = substr($gateway, -2);
+        $gateway = config::byKey('gateLib','rflink','Firmware non reconnu');
         $release = config::byKey('avaLib','rflink');
+        echo '<div class="form-group">
+        <label class="col-lg-4 control-label">{{Firmware installé}}</label>
+        <div class="col-lg-3">';
+        echo "Mettre à jour en R" . $release;
+        echo '</div>
+        </div>';
         echo '<div class="form-group">
         <label class="col-lg-4 control-label">{{Flasher le RFLink}}</label>
         <div class="col-lg-3">
         <a class="btn btn-warning bt_flashRF"><i class="fa fa-check"></i> ';
-        if ($release > $actual) {
-          echo "Mettre à jour en R" . $release;
-        } else {
-          echo "Lancer l'installation";
-        }
+         echo "Installation firmware R" . $release;
         echo '</a></div>
         </div>';
       } else {
@@ -108,33 +109,15 @@ if (!isConnect()) {
       <div id="div_local" class="form-group">
         <label class="col-lg-4 control-label">{{RFLink réseau}} :</label>
         <div class="col-lg-4 div_network">
-          <a class="btn btn-default bt_network"><i class="fa fa-plus-circle"></i>
-            Ajouter un Rflink réseau
-          </a>
-          <table id="table_net" class="table table-bordered table-condensed">
-              <tbody>
-                <?php
-
-                if (config::byKey('netgate','rflink') != '') {
-                  $net = explode(";", config::byKey('netgate','rflink'));
-                  foreach ($net as $value) {
-                    echo "<tr><td><input name='network' type='text' class='input_network' placeholder='ip:port' value='" . $value . "'></td><td><i class='fa fa-minus-circle cursor'></i></td></tr>";
-                  }
-                }
-
-                 ?>
-              </tbody>
-          </table>
+          <input name='net_cmd' type='text' class='configKey form-control' data-l1key="netGateway">
 
           </div>
         </div>
-      </div>
     </fieldset>
   </form>
 
 
   <script>
-
   $('.bt_flashRF').on('click',function(){
     bootbox.confirm('{{Etes-vous sûr de vouloir flasher le RFLink ? }}', function (result) {
       if (result) {
@@ -269,46 +252,6 @@ $('.bt_send').on('click',function(){
 }
 });
 });
-
-$('.bt_network').on('click',function(){
-  var newInput = $("<tr><td><input name='network' type='text' class='input_network' placeholder='ip:port'></td><td><i class='fa fa-minus-circle cursor'></i></td></tr>");
-  $('#table_net tbody').append(newInput);
-});
-
-$('.cursor').on('click',function(){
-  $(this).closest('tr').remove();
-});
-
-function rflink_postSaveConfiguration(){
-var network = '';
-$('.input_network').each(function(index, value) {
-  if (network != '' ) {
-    network = network + ';' + $(this).value();
-  } else {
-    network = $(this).value();
-  }
-});
-$.ajax({// fonction permettant de faire de l'ajax
-    type: "POST", // methode de transmission des données au fichier php
-    url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
-    data: {
-        action: "netgate",
-        value: network,
-    },
-    dataType: 'json',
-    error: function (request, status, error) {
-        handleAjaxError(request, status, error);
-    },
-    success: function (data) { // si l'appel a bien fonctionné
-if (data.state != 'ok') {
-  $('#div_alert').showAlert({message: data.result, level: 'danger'});
-  return;
-}
-}
-});
-}
-
-
 </script>
 </div>
 </fieldset>

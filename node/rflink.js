@@ -39,16 +39,6 @@ function saveValue(data) {
 	});
 }
 
-function saveGateway(status) {
-	console.log((new Date()) + " - Save Gateway Status " + status);
-	url = urlJeedom + "&messagetype=saveGateway&type=rflink&status="+status;
-	request(url, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			if (log == 'debug') {console.log((new Date()) + " - Got response saveSensor : " + response.statusCode);}
-		}
-	});
-}
-
 function rfReceived(data) {
 	if ((data != null) && (data != "")) {
 		//LogDate("debug", "-> "  + td.toString() );
@@ -103,16 +93,13 @@ if (gwNetwork != 'none') {
 		gw[net].setEncoding('ascii');
 		gw[net].on('connect', function() {
 			console.log((new Date()) + " - connected to network gateway at " + gwAddress + ":" + gwPort);
-			saveGateway('1');
 		}).on('data', function(rd) {
 			if (log == 'debug') {console.log((new Date()) + " - "  + rd)};
 			saveValue(rd);
 		}).on('end', function() {
 			console.log((new Date()) + " - disconnected from network gateway");
-			saveGateway('0');
 		}).on('error', function() {
 			console.log((new Date()) + " - connection error - trying to reconnect");
-			saveGateway('0');
 			gw[net].connect(netgate[0], netgate[1]);
 			gw[net].setEncoding('ascii');
 		});
@@ -132,16 +119,13 @@ if (gwAddress != 'none') {
 	//gw['serial'].open();
 	gw['serial'].on('open', function() {
 		console.log((new Date()) + " - connected to serial gateway at " + gwAddress);
-		saveGateway('1');
 	}).on('data', function(rd) {
 		if (log == 'debug') {console.log((new Date()) + " - "  + rd)};
 		saveValue(rd);
 	}).on('end', function() {
 		console.log((new Date()) + " - disconnected from serial gateway");
-		saveGateway('0');
 	}).on('error', function(error) {
 		console.log((new Date()) + " - connection error - trying to reconnect : " + error.message);
-		saveGateway('0');
 		setTimeout(function() {gw['serial'].open();}, 5000);
 	});
 }
