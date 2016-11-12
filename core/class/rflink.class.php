@@ -74,7 +74,7 @@ class rflink extends eqLogic {
             echo "Service ne répond pas";
             return false;
         } else {
-            fwrite($fp, $msg);
+            fwrite($fp, $command);
             fclose($fp);
         }
     }
