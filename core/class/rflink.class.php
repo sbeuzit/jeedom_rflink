@@ -251,7 +251,7 @@ class rflink extends eqLogic {
             $_value = $this->checkHexaCmd($_cmd,$_value);
             $_value = $this->checkDivCmd($_cmd,$_value);
             $cmds = $this->getCmd();
-            $this->checkCmdOk($_cmd, $_cmd . ' - ' . count($cmds), 'info', rflink::checkNumCmd($_cmd), $_value, '0', '0');
+            $this->checkCmdOk($_cmd, $_cmd . ' - ' . count($cmds), rflink::checkNumCmd($_cmd), $_value);
             $this->checkAndUpdateCmd($_cmd, $_value);
         }
     }
