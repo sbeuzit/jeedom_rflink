@@ -198,21 +198,21 @@ class rflink extends eqLogic {
         $this->checkCmdOk($_cmd, 'Etat Lampe ' . $_cmd, 'string', $_value);
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
         $cmId = $thisCmd->getId();
-        $this->checkCmdOk('ON' . $cmd, 'On ' . $cmd, 'other', $_cmd, '#color#;ON', $cmId, '0');
-        $this->checkCmdOk('ALLON' . $cmd, 'All On ' . $cmd, 'other', $_cmd, '#color#;ALLON', $cmId, '0');
-        $this->checkCmdOk('OFF' . $cmd, 'Off ' . $cmd, 'other', $_cmd, '#color#;OFF', $cmId, '0');
-        $this->checkCmdOk('ALLOFF' . $cmd, 'All Off ' . $cmd, 'other', $_cmd, '#color#;ALLOFF', $cmId, '0');
+        $this->checkActOk('ON' . $cmd, 'On ' . $cmd, 'other', $_cmd, '#color#;ON', $cmId, '0');
+        $this->checkActOk('ALLON' . $cmd, 'All On ' . $cmd, 'other', $_cmd, '#color#;ALLON', $cmId, '0');
+        $this->checkActOk('OFF' . $cmd, 'Off ' . $cmd, 'other', $_cmd, '#color#;OFF', $cmId, '0');
+        $this->checkActOk('ALLOFF' . $cmd, 'All Off ' . $cmd, 'other', $_cmd, '#color#;ALLOFF', $cmId, '0');
 
         $this->checkCmdOk('RGBW' . $_cmd, 'Couleur Lampe ' . $_cmd, 'string', $_rgbw);
         $this->checkAndUpdateCmd('RGBW' . $cmd, $_rgbw);
         $this->checkCmdOk('color_val' . $_cmd, 'Couleur Valeur ' . $_cmd, 'string', substr($_rgbw, 0, 2));
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val' . $_cmd);
         $cmId = $thisCmd->getId();
-        $this->checkCmdOk('COLOR' . $_cmd, 'Couleur ' . $_cmd, 'slider', $_cmd, '#color#;COLOR', $cmId, '255');
+        $this->checkActOk('COLOR' . $_cmd, 'Couleur ' . $_cmd, 'slider', $_cmd, '#color#;COLOR', $cmId, '255');
         $this->checkCmdOk('bright_val' . $_cmd, 'Luminosité Valeur ' . $_cmd, 'string', substr($_rgbw, -2));
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val' . $_cmd);
         $cmId = $thisCmd->getId();
-        $this->checkCmdOk('BRIGHT' . $_cmd, 'Luminosité ' . $_cmd, 'slider', $_cmd, '#color#;BRIGHT', $cmId, '32');
+        $this->checkActOk('BRIGHT' . $_cmd, 'Luminosité ' . $_cmd, 'slider', $_cmd, '#color#;BRIGHT', $cmId, '32');
     }
 
     public function registerSwitch($_cmd, $_value) {
