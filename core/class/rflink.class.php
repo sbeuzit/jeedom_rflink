@@ -352,7 +352,6 @@ class rflink extends eqLogic {
         }
     }
 }
-}
 
 public static function saveInclude($mode) {
     config::save('include_mode', $mode,  'rflink');
