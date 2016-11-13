@@ -215,12 +215,12 @@ class rflink extends eqLogic {
         //return rgbw value
         if (strpos($_logid, 'COLOR') !== false) {
             $color = substr(dechex($_value),-2);
-            $this->checkAndUpdateCmd('color_val' . $_id, $_value);
+            $this->checkAndUpdateCmd('color_val' . $_id, $color);
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val'.$_id);
             $bright = $rflinkCmd->getConfiguration('value');
         } else if (strpos($_logid, 'BRIGHT') !== false) {
             $bright = substr(dechex($_value*8),-2);
-            $this->checkAndUpdateCmd('bright_val' . $_id, $_value);
+            $this->checkAndUpdateCmd('bright_val' . $_id, $bright);
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val'.$_id);
             $color = $rflinkCmd->getConfiguration('value');
         } else {
