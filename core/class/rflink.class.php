@@ -198,13 +198,13 @@ class rflink extends eqLogic {
         $this->checkCmdOk($_cmd, 'Etat Lampe ' . $_cmd, 'string', $_value);
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
         $cmId = $thisCmd->getId();
-        $this->checkActOk('ON' . $cmd, 'On ' . $cmd, 'other', $_cmd, '#color#;ON', $cmId, '0');
-        $this->checkActOk('ALLON' . $cmd, 'All On ' . $cmd, 'other', $_cmd, '#color#;ALLON', $cmId, '0');
-        $this->checkActOk('OFF' . $cmd, 'Off ' . $cmd, 'other', $_cmd, '#color#;OFF', $cmId, '0');
-        $this->checkActOk('ALLOFF' . $cmd, 'All Off ' . $cmd, 'other', $_cmd, '#color#;ALLOFF', $cmId, '0');
+        $this->checkActOk('ON' . $_cmd, 'On ' . $_cmd, 'other', $_cmd, '#color#;ON', $cmId, '0');
+        $this->checkActOk('ALLON' . $_cmd, 'All On ' . $_cmd, 'other', $_cmd, '#color#;ALLON', $cmId, '0');
+        $this->checkActOk('OFF' . $_cmd, 'Off ' . $_cmd, 'other', $_cmd, '#color#;OFF', $cmId, '0');
+        $this->checkActOk('ALLOFF' . $_cmd, 'All Off ' . $_cmd, 'other', $_cmd, '#color#;ALLOFF', $cmId, '0');
 
         $this->checkCmdOk('RGBW' . $_cmd, 'Couleur Lampe ' . $_cmd, 'string', $_rgbw);
-        $this->checkAndUpdateCmd('RGBW' . $cmd, $_rgbw);
+        $this->checkAndUpdateCmd('RGBW' . $_cmd, $_rgbw);
         $this->checkCmdOk('color_val' . $_cmd, 'Couleur Valeur ' . $_cmd, 'string', substr($_rgbw, 0, 2));
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val' . $_cmd);
         $cmId = $thisCmd->getId();
@@ -329,13 +329,13 @@ class rflink extends eqLogic {
             case 'SWITCH' :
             switch ($protocol) {
                 case 'RTS' :
-                $rflink->registerRTS($value,$datas['CMD']);
+                $rflink->registerRTS($value,$args['CMD']);
                 break;
                 case 'MiLightv1' :
-                $rflink->registerMilightv1($value,$datas['CMD'],$datas['RGBW']);
+                $rflink->registerMilightv1($value,$args['CMD'],$args['RGBW']);
                 break;
                 default :
-                $rflink->registerSwitch($value,$datas['CMD']);
+                $rflink->registerSwitch($value,$args['CMD']);
                 //SWITCH=00;CMD=OFF
                 break;
             }
