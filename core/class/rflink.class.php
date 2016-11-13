@@ -225,7 +225,7 @@ class rflink extends eqLogic {
             $color = substr(dechex($_value),-2);
             $this->checkAndUpdateCmd('color_val' . $_id, $color);
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val'.$_id);
-            $bright = $rflinkCmd->setConfiguration('value');
+            $bright = $rflinkCmd->getConfiguration('value');
         } else if (strpos($_logid, 'BRIGHT') !== false) {
             $bright = substr(dechex($_value*8),-2);
             $this->checkAndUpdateCmd('bright_val' . $_id, $bright);
@@ -235,11 +235,12 @@ class rflink extends eqLogic {
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val'.$_id);
             $color = $rflinkCmd->getConfiguration('value');
             $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val'.$_id);
-            $bright = $rflinkCmd->setConfiguration('value');
+            $bright = $rflinkCmd->getConfiguration('value');
         }
         $this->checkAndUpdateCmd('RGBW' . $_id, $color.$bright);
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_logid);
         $request = str_replace('#color#', $color.$bright, $rflinkCmd->getConfiguration('request'));
+        log::add('rflink', 'debug', 'Request Milight : ' . $request);
         return $request;
     }
 
