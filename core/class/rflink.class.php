@@ -315,7 +315,7 @@ class rflink extends eqLogic {
         if ($i > 3) {
             if (strpos($info,'=') !== false) {
                 $arg = explode("=", $info);
-                $args[$arg[1]] = $arg[2];
+                $args[$arg[0]] = $arg[1];
             }
         }
         $i++;
