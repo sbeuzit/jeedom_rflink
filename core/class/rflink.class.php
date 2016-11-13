@@ -122,7 +122,7 @@ class rflink extends eqLogic {
         }
     }
 
-    public function checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider) {
+    public function checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_maxslider) {
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_id);
         if (!is_object($rflinkCmd)) {
             log::add('rflink', 'debug', 'Création de la commande ' . $_id);
@@ -181,40 +181,32 @@ class rflink extends eqLogic {
 
     public function registerRTS($_cmd, $_value) {
         //checkCmdOk($_id, $_name, $_subtype, $_value)
-        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider)
+        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_maxslider)
         $this->checkCmdOk($_cmd, 'Statut ' . $_cmd, 'binary', $_value);
         $this->checkAndUpdateCmd($_cmd, $_value);
-        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
-        $cmId = $thisCmd->getId();
-        $this->checkActOk('PAIR' . $_cmd, 'Appairement ' . $_cmd, $_cmd, 'PAIR', $cmId, '0');
-        $this->checkActOk('UP' . $_cmd, 'Montée ' . $_cmd, $_cmd, 'UP', 'UP', $cmId, '0');
-        $this->checkActOk('DOWN' . $_cmd, 'Descente ' . $_cmd, $_cmd, 'DOWN', 'DOWN', $cmId, '0');
-        $this->checkActOk('STOP' . $_cmd, 'Arret ' . $_cmd, $_cmd, 'STOP', 'STOP', $cmId, '0');
+        $this->checkActOk('PAIR' . $_cmd, 'Appairement ' . $_cmd, $_cmd, 'PAIR', '0');
+        $this->checkActOk('UP' . $_cmd, 'Montée ' . $_cmd, $_cmd, 'UP', 'UP', '0');
+        $this->checkActOk('DOWN' . $_cmd, 'Descente ' . $_cmd, $_cmd, 'DOWN', 'DOWN', '0');
+        $this->checkActOk('STOP' . $_cmd, 'Arret ' . $_cmd, $_cmd, 'STOP', 'STOP', '0');
     }
 
     public function registerMilightv1($_cmd, $_value, $_rgbw) {
         //checkCmdOk($_id, $_name, $_subtype, $_value)
-        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider)
+        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_maxslider)
         $this->checkCmdOk($_cmd, 'Etat Lampe ' . $_cmd, 'string', $_value);
-        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
-        $cmId = $thisCmd->getId();
-        $this->checkActOk('ON' . $_cmd, 'On ' . $_cmd, 'other', $_cmd, '#color#;ON', $cmId, '0');
-        $this->checkActOk('ALLON' . $_cmd, 'All On ' . $_cmd, 'other', $_cmd, '#color#;ALLON', $cmId, '0');
-        $this->checkActOk('OFF' . $_cmd, 'Off ' . $_cmd, 'other', $_cmd, '#color#;OFF', $cmId, '0');
-        $this->checkActOk('ALLOFF' . $_cmd, 'All Off ' . $_cmd, 'other', $_cmd, '#color#;ALLOFF', $cmId, '0');
+        $this->checkActOk('ON' . $_cmd, 'On ' . $_cmd, 'other', $_cmd, 'ON', '0');
+        $this->checkActOk('ALLON' . $_cmd, 'All On ' . $_cmd, 'other', $_cmd, 'ALLON', '0');
+        $this->checkActOk('OFF' . $_cmd, 'Off ' . $_cmd, 'other', $_cmd, 'OFF', '0');
+        $this->checkActOk('ALLOFF' . $_cmd, 'All Off ' . $_cmd, 'other', $_cmd, 'ALLOFF', '0');
 
         $this->checkCmdOk('RGBW' . $_cmd, 'Couleur Lampe ' . $_cmd, 'string', $_rgbw);
         $this->checkAndUpdateCmd('RGBW' . $_cmd, $_rgbw);
         $this->checkCmdOk('color_val' . $_cmd, 'Couleur Valeur ' . $_cmd, 'string', substr($_rgbw, 0, 2));
         $this->checkAndUpdateCmd('color_val' . $_cmd, substr($_rgbw, 0, 2));
-        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val' . $_cmd);
-        $cmId = $thisCmd->getId();
-        $this->checkActOk('COLOR' . $_cmd, 'Couleur ' . $_cmd, 'slider', $_cmd, '#color#;COLOR', $cmId, '255');
+        $this->checkActOk('COLOR' . $_cmd, 'Couleur ' . $_cmd, 'slider', $_cmd, 'COLOR', '255');
         $this->checkCmdOk('bright_val' . $_cmd, 'Luminosité Valeur ' . $_cmd, 'string', substr($_rgbw, -2));
         $this->checkAndUpdateCmd('bright_val' . $_cmd, substr($_rgbw, -2));
-        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val' . $_cmd);
-        $cmId = $thisCmd->getId();
-        $this->checkActOk('BRIGHT' . $_cmd, 'Luminosité ' . $_cmd, 'slider', $_cmd, '#color#;BRIGHT', $cmId, '32');
+        $this->checkActOk('BRIGHT' . $_cmd, 'Luminosité ' . $_cmd, 'slider', $_cmd, 'BRIGHT', '32');
     }
 
     public function setColorMilight($_id, $_logid, $_value) {
@@ -239,14 +231,15 @@ class rflink extends eqLogic {
         }
         $this->checkAndUpdateCmd('RGBW' . $_id, $color.$bright);
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_logid);
-        $request = str_replace('#color#', $color.$bright, $rflinkCmd->getConfiguration('request'));
+        $request = $color . $bright . ';' . $rflinkCmd->getConfiguration('request');
+        $this->checkAndUpdateCmd($_id, $rflinkCmd->getConfiguration('request'));
         log::add('rflink', 'debug', 'Request Milight : ' . $request);
         return $request;
     }
 
     public function registerSwitch($_cmd, $_value) {
         //checkCmdOk($_id, $_name, $_subtype, $_value)
-        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider)
+        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_maxslider)
         if ($_cmd[0] == '0' && strlen($_cmd) > 1) {
             //supp les 0 en début de switch
             $_cmd = ltrim($_cmd, "0");
@@ -255,9 +248,7 @@ class rflink extends eqLogic {
         $binary = ($_value == 'OFF') ? '0' : '1';
         $this->checkCmdOk($_cmd, 'Statut ' . $_cmd, 'binary', $binary);
         $this->checkAndUpdateCmd($_cmd, $binary);
-        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
-        $cmId = $thisCmd->getId();
-        $this->checkActOk($_value . $_cmd, $_value . $_cmd, 'other', $_cmd, 'ON', $cmId, '0');
+        $this->checkActOk($_value . $_cmd, $_value . ' ' . $_cmd, 'other', $_cmd, $_value, '0');
     }
 
     public function registerBattery($_value) {
@@ -562,7 +553,9 @@ class rflinkCmd extends cmd {
                 if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
                     $request = $eqLogic->setColorMilight($this->getConfiguration('id'),$this->getLogicalId(),'other');
                 } else {
-                    $request = str_replace('#slider#', $_options['slider'], $request);
+                    $request = $request;
+                    $binary = ($request == 'OFF') ? '0' : '1';
+                    $this->checkAndUpdateCmd($id, $binary);
                 }
                 break;
                 default : $request == null ?  1 : $request;
