@@ -206,13 +206,41 @@ class rflink extends eqLogic {
         $this->checkCmdOk('RGBW' . $_cmd, 'Couleur Lampe ' . $_cmd, 'string', $_rgbw);
         $this->checkAndUpdateCmd('RGBW' . $_cmd, $_rgbw);
         $this->checkCmdOk('color_val' . $_cmd, 'Couleur Valeur ' . $_cmd, 'string', substr($_rgbw, 0, 2));
+        $this->checkAndUpdateCmd('color_val' . $_cmd, substr($_rgbw, 0, 2));
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val' . $_cmd);
         $cmId = $thisCmd->getId();
         $this->checkActOk('COLOR' . $_cmd, 'Couleur ' . $_cmd, 'slider', $_cmd, '#color#;COLOR', $cmId, '255');
         $this->checkCmdOk('bright_val' . $_cmd, 'Luminosité Valeur ' . $_cmd, 'string', substr($_rgbw, -2));
+        $this->checkAndUpdateCmd('bright_val' . $_cmd, substr($_rgbw, -2));
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val' . $_cmd);
         $cmId = $thisCmd->getId();
         $this->checkActOk('BRIGHT' . $_cmd, 'Luminosité ' . $_cmd, 'slider', $_cmd, '#color#;BRIGHT', $cmId, '32');
+    }
+
+    public function setColorMilight($_id, $_logid, $_value) {
+        //change value color or brightness with _logid and _id, then change rgbw value
+        //then take the request value and replace #color# by rgbw value
+        //return rgbw value
+        if (strpos($_logid, 'COLOR') !== false) {
+            $color = substr(dechex($_value),-2);
+            $this->checkAndUpdateCmd('color_val' . $_id, $color);
+            $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val'.$_id);
+            $bright = $rflinkCmd->setConfiguration('value');
+        } else if (strpos($_logid, 'BRIGHT') !== false) {
+            $bright = substr(dechex($_value*8),-2);
+            $this->checkAndUpdateCmd('bright_val' . $_id, $bright);
+            $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val'.$_id);
+            $color = $rflinkCmd->getConfiguration('value');
+        } else {
+            $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val'.$_id);
+            $color = $rflinkCmd->getConfiguration('value');
+            $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val'.$_id);
+            $bright = $rflinkCmd->setConfiguration('value');
+        }
+        $this->checkAndUpdateCmd('RGBW' . $_id, $color.$bright);
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_logid);
+        $request = str_replace('#color#', $color.$bright, $rflinkCmd->getConfiguration('request'));
+        return $request;
     }
 
     public function registerSwitch($_cmd, $_value) {
@@ -502,25 +530,14 @@ class rflinkCmd extends cmd {
             break;
 
             case 'action' :
+            $id = $this->getConfiguration('id');
             $request = $this->getConfiguration('request');
             $eqLogic = $this->getEqLogic();
 
             switch ($this->getSubType()) {
                 case 'slider':
                 if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
-                    if ($this->getConfiguration('milight') == 'color') {
-                        $color = substr(dechex($_options['slider']),-2);
-                        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'color_val'.$this->getConfiguration('id'));
-                        $rflinkCmd->setConfiguration('value', $color);
-                        $rflinkCmd->save();
-                        //log::add('rflink', 'debug', 'Milight Color ' . $color);
-                    } else {
-                        $color = substr(dechex($_options['slider']*8),-2);
-                        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'bright_val'.$this->getConfiguration('id'));
-                        $rflinkCmd->setConfiguration('value', $color);
-                        $rflinkCmd->save();
-                        //log::add('rflink', 'debug', 'Milight Bright ' . $color);
-                    }
+                    $request = $eqLogic->setColorMilight($this->getConfiguration('id'),$this->getLogicalId(),$_options['slider']);
                 } else {
                     $request = str_replace('#slider#', $_options['slider'], $request);
                 }
@@ -530,61 +547,50 @@ class rflinkCmd extends cmd {
                 break;
                 case 'message':
                 if ($_options != null)  {
-
                     $replace = array('#title#', '#message#');
                     $replaceBy = array($_options['title'], $_options['message']);
                     if ( $_options['title'] == '') {
                         throw new Exception(__('Le sujet ne peuvent être vide', __FILE__));
                     }
                     $request = str_replace($replace, $replaceBy, $request);
-
+                } else {
+                    $request = 1;
                 }
-                else
-                $request = 1;
+                break;
+                case 'other':
+                if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
+                    $request = $eqLogic->setColorMilight($this->getConfiguration('id'),$this->getLogicalId(),'other');
+                } else {
+                    $request = str_replace('#slider#', $_options['slider'], $request);
+                }
                 break;
                 default : $request == null ?  1 : $request;
             }
 
             if ($request != 'PAIR') {
-                if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
-                    $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'color_val'.$this->getConfiguration('id'));
-                    $color = $rflinkCmd->getConfiguration('value');
-                    $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'bright_val'.$this->getConfiguration('id'));
-                    $bright = $rflinkCmd->getConfiguration('value');
-                    $request = str_replace('#color#', $color.$bright, $this->getConfiguration('request'));
-                    //log::add('rflink', 'debug', 'Milight ' . $color.$bright . ' : '. $request);
-                    rflink::sendToController(
-                        $eqLogic->getConfiguration('protocol') ,
-                        $eqLogic->getConfiguration('id') ,
-                        $request );
-                    } else {
-                        rflink::sendToController(
-                            $eqLogic->getConfiguration('protocol') ,
-                            $eqLogic->getConfiguration('id') ,
-                            $request );
-                        }
-                    } else {
-                        rflink::sendToController(
-                            $eqLogic->getConfiguration('protocol') ,
-                            $eqLogic->getConfiguration('id') ,
-                            '0;ON' );
+                rflink::sendToController(
+                    $eqLogic->getConfiguration('protocol') ,
+                    $eqLogic->getConfiguration('id') ,
+                    $id . ';' . $request );
+            } else {
+                rflink::sendToController(
+                    $eqLogic->getConfiguration('protocol') ,
+                    $eqLogic->getConfiguration('id') ,
+                    '0;ON' );
 
-                            $id1 = dechex(hexdec($eqLogic->getConfiguration('id')) + 1);
+                $id1 = dechex(hexdec($eqLogic->getConfiguration('id')) + 1);
 
-                            rflink::sendToController(
-                                $eqLogic->getConfiguration('protocol') ,
-                                $id1 ,
-                                '0123;PAIR' );
+                rflink::sendToController(
+                    $eqLogic->getConfiguration('protocol') ,
+                    $id1 ,
+                    '0123;PAIR' );
 
-                                rflink::sendToController(
-                                    $eqLogic->getConfiguration('protocol') ,
-                                    $id1 ,
-                                    '0123;0;PAIR' );
-                                }
-
-                                $result = $request;
-                                return $result;
-                            }
-                            return true;
-                        }
-                    }
+                rflink::sendToController(
+                    $eqLogic->getConfiguration('protocol') ,
+                    $id1 ,
+                    '0123;0;PAIR' );
+                }
+            }
+            return true;
+    }
+}
