@@ -303,7 +303,7 @@ class rflink extends eqLogic {
             $rflink->save();
             event::add('rflink::includeDevice',
             array(
-                'state' => $state
+                'state' => 1
             )
         );
     }
