@@ -228,7 +228,7 @@ class rflink extends eqLogic {
         $this->checkAndUpdateCmd($_cmd, $binary);
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
         $cmId = $thisCmd->getId();
-        $this->checkCmdOk($_value . $_cmd, $_value . $_cmd, 'other', $_cmd, 'ON', $cmId, '0');
+        $this->checkActOk($_value . $_cmd, $_value . $_cmd, 'other', $_cmd, 'ON', $cmId, '0');
     }
 
     public function registerBattery($_value) {
@@ -311,6 +311,9 @@ class rflink extends eqLogic {
     if (!is_object($rflink)) {
         return false;
     }
+
+    $rflink = self::byLogicalId($nodeid, 'rflink');
+    $rflink->save();
 
     $i=0;
     $args = array();
