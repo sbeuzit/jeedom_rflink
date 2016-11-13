@@ -313,8 +313,8 @@ class rflink extends eqLogic {
     $args = array();
     foreach ($datas as $info) {
         if ($i > 3) {
-            if (strpos($value,'=') !== false) {
-                $arg = explode("=", $value);
+            if (strpos($info,'=') !== false) {
+                $arg = explode("=", $info);
                 $args[$arg[1]] = $arg[2];
             }
         }
