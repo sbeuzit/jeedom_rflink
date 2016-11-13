@@ -264,11 +264,14 @@ class rflink extends eqLogic {
             log::add('rflink', 'debug', 'Trame de debug recue : ' . $data);
             return false;
         }
+
+        $datas = explode(";", $data);
+
         if (strpos($data,'Nodo RadioFrequencyLink') !== false) {
             config::save('gateLib', $datas[2],  'rflink');
             return false;
         }
-        $datas = explode(";", $data);
+
         if ($datas[0] == '10') {
             //envoi de données, on va pas plus loin
             return false;
