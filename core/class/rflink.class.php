@@ -100,7 +100,7 @@ class rflink extends eqLogic {
         $rflink->checkAndUpdateCmd($cmd, $value);
     }
 
-    public function checkCmdOk($_id, $_name, $_type, $_subtype, $_value, $_request, $_setval) {
+    public function checkCmdOk($_id, $_name, $_subtype, $_value) {
         $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_id);
         if (!is_object($rflinkCmd)) {
             log::add('rflink', 'debug', 'Création de la commande ' . $_id);
@@ -112,20 +112,41 @@ class rflink extends eqLogic {
             $rflinkCmd->setEqLogic_id($this->id);
             $rflinkCmd->setEqType('rflink');
             $rflinkCmd->setLogicalId($_id);
-            $rflinkCmd->setType($_type);
-            if ($_setval != 0) {
-                $rflinkCmd->setValue($_setval);
-            }
+            $rflinkCmd->setType('info');
+            $rflinkCmd->setSubType($_subtype);
             $rflinkCmd->setTemplate("mobile",'line' );
             $rflinkCmd->setTemplate("dashboard",'line' );
             $rflinkCmd->setDisplay("forceReturnLineAfter","1");
+            $rflinkCmd->setConfiguration('value',$_value);
+            $rflinkCmd->save();
         }
-        $rflinkCmd->setSubType($_subtype);
-        $rflinkCmd->setConfiguration('value',$_value);
-        if ($_request != 0) {
+    }
+
+    public function checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider) {
+        $rflinkCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_id);
+        if (!is_object($rflinkCmd)) {
+            log::add('rflink', 'debug', 'Création de la commande ' . $_id);
+            $rflinkCmd = new rflinkCmd();
+            $cmds = $this->getCmd();
+            $order = count($cmds);
+            $rflinkCmd->setOrder($order);
+            $rflinkCmd->setName(__($_name, __FILE__));
+            $rflinkCmd->setEqLogic_id($this->id);
+            $rflinkCmd->setEqType('rflink');
+            $rflinkCmd->setLogicalId($_id);
+            $rflinkCmd->setType('action');
+            $rflinkCmd->setSubType($_subtype);
+            if ($_setval != '0') {
+                $rflinkCmd->setValue($_setval);
+            }
+            if ($_maxslider != '0') {
+                $rflinkCmd->setConfiguration('minValue', 0);
+                $rflinkCmd->setConfiguration('maxValue', $_maxslider);
+            }
+            $rflinkCmd->setConfiguration('id',$_cmdid);
             $rflinkCmd->setConfiguration('request',$_request);
+            $rflinkCmd->save();
         }
-        $rflinkCmd->save();
     }
 
     public function checkHexaCmd($_cmd, $_value) {
@@ -159,55 +180,55 @@ class rflink extends eqLogic {
     }
 
     public function registerRTS($_cmd, $_value) {
-        //$this->checkCmdOk($_id, $_name, $_type, $_subtype, $_value, $_request, $_setval);
-        $this->checkCmdOk('PAIR' . $_cmd, 'Appairement ' . $_cmd, 'action', 'other', 'PAIR', 'PAIR', '0');
-        $this->checkCmdOk($_cmd, 'Statut ' . $_cmd, 'info', 'binary', $_value, '0', '0');
+        //checkCmdOk($_id, $_name, $_subtype, $_value)
+        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider)
+        $this->checkCmdOk($_cmd, 'Statut ' . $_cmd, 'binary', $_value);
         $this->checkAndUpdateCmd($_cmd, $_value);
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
         $cmId = $thisCmd->getId();
-        $this->checkCmdOk('UP' . $_cmd, 'Montée ' . $_cmd, 'action', 'other', 'UP', 'UP', $cmId);
-        $this->checkCmdOk('DOWN' . $_cmd, 'Descente ' . $_cmd, 'action', 'other', 'DOWN', 'DOWN', $cmId);
-        $this->checkCmdOk('STOP' . $_cmd, 'Arret ' . $_cmd, 'action', 'other', 'STOP', 'STOP', $cmId);
+        $this->checkActOk('PAIR' . $_cmd, 'Appairement ' . $_cmd, $_cmd, 'PAIR', $cmId, '0');
+        $this->checkActOk('UP' . $_cmd, 'Montée ' . $_cmd, $_cmd, 'UP', 'UP', $cmId, '0');
+        $this->checkActOk('DOWN' . $_cmd, 'Descente ' . $_cmd, $_cmd, 'DOWN', 'DOWN', $cmId, '0');
+        $this->checkActOk('STOP' . $_cmd, 'Arret ' . $_cmd, $_cmd, 'STOP', 'STOP', $cmId, '0');
     }
 
-    public function registerMilightv1($_cmd, $_value) {
-        $this->checkCmdOk('ON' . $cmd, 'On ' . $cmd, 'action', 'other', '0', $cmd.';#color#;ON', '0');
-        $this->checkCmdOk('ALLON' . $cmd, 'All On ' . $cmd, 'action', 'other', '0', $cmd.';#color#;ALLON', '0');
-        $this->checkCmdOk('OFF' . $cmd, 'Off ' . $cmd, 'action', 'other', '0', $cmd.';#color#;OFF', '0');
-        $this->checkCmdOk('ALLOFF' . $cmd, 'All Off ' . $cmd, 'action', 'other', '0', $cmd.';#color#;ALLOFF', '0');
-        $this->checkCmdOk('COLOR' . $cmd, 'Coleur ' . $cmd, 'action', 'slider', '0', $cmd.';#color#;COLOR', '0');
+    public function registerMilightv1($_cmd, $_value, $_rgbw) {
+        //checkCmdOk($_id, $_name, $_subtype, $_value)
+        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider)
+        $this->checkCmdOk($_cmd, 'Etat Lampe ' . $_cmd, 'string', $_value);
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
-        $thisCmd->setConfiguration('minValue', 0);
-        $thisCmd->setConfiguration('maxValue', 255);
-        $thisCmd->setConfiguration('milight', 'color');
-        $thisCmd->save();
-        $this->checkCmdOk('BRIGHT' . $cmd, 'Luminosité ' . $cmd, 'action', 'slider', '0', $cmd.';#color#;BRIGHT', '0');
-        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
-        $thisCmd->setConfiguration('minValue', 0);
-        $thisCmd->setConfiguration('maxValue', 32);
-        $thisCmd->save();
-        $this->checkCmdOk('color_val' . $cmd, 'Couleur Valeur ' . $cmd, 'info', 'string', '00', '0', '0');
-        $this->checkCmdOk('bright_val' . $cmd, 'Luminosité Valeur ' . $cmd, 'info', 'string', '00', '0', '0');
-        $this->checkCmdOk('RGBW' . $cmd, 'Etat Lampe ' . $cmd, 'info', 'string', $_value, '0', '0');
-        $this->checkAndUpdateCmd('RGBW' . $cmd, $_value);
+        $cmId = $thisCmd->getId();
+        $this->checkCmdOk('ON' . $cmd, 'On ' . $cmd, 'other', $_cmd, '#color#;ON', $cmId, '0');
+        $this->checkCmdOk('ALLON' . $cmd, 'All On ' . $cmd, 'other', $_cmd, '#color#;ALLON', $cmId, '0');
+        $this->checkCmdOk('OFF' . $cmd, 'Off ' . $cmd, 'other', $_cmd, '#color#;OFF', $cmId, '0');
+        $this->checkCmdOk('ALLOFF' . $cmd, 'All Off ' . $cmd, 'other', $_cmd, '#color#;ALLOFF', $cmId, '0');
 
-        $rflinkCmd->setConfiguration('id', $cmd);
+        $this->checkCmdOk('RGBW' . $_cmd, 'Couleur Lampe ' . $_cmd, 'string', $_rgbw);
+        $this->checkAndUpdateCmd('RGBW' . $cmd, $_rgbw);
+        $this->checkCmdOk('color_val' . $_cmd, 'Couleur Valeur ' . $_cmd, 'string', substr($_rgbw, 0, 2));
+        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'color_val' . $_cmd);
+        $cmId = $thisCmd->getId();
+        $this->checkCmdOk('COLOR' . $_cmd, 'Couleur ' . $_cmd, 'slider', $_cmd, '#color#;COLOR', $cmId, '255');
+        $this->checkCmdOk('bright_val' . $_cmd, 'Luminosité Valeur ' . $_cmd, 'string', substr($_rgbw, -2));
+        $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),'bright_val' . $_cmd);
+        $cmId = $thisCmd->getId();
+        $this->checkCmdOk('BRIGHT' . $_cmd, 'Luminosité ' . $_cmd, 'slider', $_cmd, '#color#;BRIGHT', $cmId, '32');
     }
 
     public function registerSwitch($_cmd, $_value) {
-        //$this->checkCmdOk($_id, $_name, $_type, $_subtype, $_value, $_request, $_setval);
+        //checkCmdOk($_id, $_name, $_subtype, $_value)
+        //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_setval, $_maxslider)
         if ($_cmd[0] == '0' && strlen($_cmd) > 1) {
             //supp les 0 en début de switch
             $_cmd = ltrim($_cmd, "0");
             $_cmd = ($_cmd == '') ? '0' : $_cmd;
         }
-        $_value = ($_value == 'OFF') ? '0' : '1';
-        $this->checkCmdOk($_cmd, 'Statut ' . $_cmd, 'info', 'binary', $_value, '0', '0');
-        $this->checkAndUpdateCmd($_cmd, $_value);
+        $binary = ($_value == 'OFF') ? '0' : '1';
+        $this->checkCmdOk($_cmd, 'Statut ' . $_cmd, 'binary', $binary);
+        $this->checkAndUpdateCmd($_cmd, $binary);
         $thisCmd = rflinkCmd::byEqLogicIdAndLogicalId($this->getId(),$_cmd);
         $cmId = $thisCmd->getId();
-        $this->checkCmdOk('ON' . $_cmd, 'On ' . $_cmd, 'action', 'other', '1', $_cmd . ';ON', $cmId);
-        $this->checkCmdOk('OFF' . $_cmd, 'Off ' . $_cmd, 'action', 'other', '0', $_cmd . ';OFF', $cmId);
+        $this->checkCmdOk($_value . $_cmd, $_value . $_cmd, 'other', $_cmd, 'ON', $cmId, '0');
     }
 
     public function registerBattery($_value) {
@@ -235,7 +256,7 @@ class rflink extends eqLogic {
         }
     }
 
-    public static function saveValue($json) {
+    public static function receiveData($json) {
         //log::add('rflink', 'debug', 'Body ' . print_r($json,true));
         $body = json_decode($json, true);
         $data = $body['data'];
@@ -243,29 +264,21 @@ class rflink extends eqLogic {
             log::add('rflink', 'debug', 'Trame de debug recue : ' . $data);
             return false;
         }
+        if (strpos($data,'Nodo RadioFrequencyLink') !== false) {
+            config::save('gateLib', $datas[2],  'rflink');
+            return false;
+        }
         $datas = explode(";", $data);
-
         if ($datas[0] == '10') {
             //envoi de données, on va pas plus loin
             return false;
         }
 
-        if (strpos($data,'Nodo RadioFrequencyLink') !== false) {
-            config::save('gateLib', $datas[2],  'rflink');
-            return false;
-        }
-
         $protocol = $datas[2];
 
-        if (strpos($datas[3],'=') !== false) {
-            $arg = explode("=", $datas[3]);
-            if (count($arg) != 2) {
-                log::add('rflink', 'debug', 'Trame recue avec ID vide');
-                return false;
-            }
-            $id = $arg[1];
-        }
-        if (!isset($id)) {
+        if (strpos($datas[3],'ID=') !== false) {
+            $id = str_replace('ID=', '', $datas[3]);
+        } else {
             log::add('rflink', 'debug', 'Trame non utilisable ' . $data);
             return false;
         }
@@ -297,40 +310,48 @@ class rflink extends eqLogic {
     }
 
     $i=0;
+    $args = array();
     foreach ($datas as $info) {
         if ($i > 3) {
             if (strpos($value,'=') !== false) {
                 $arg = explode("=", $value);
-                log::add('rflink', 'debug', 'Commande ' . $arg[0] . ' value ' . $arg[1]);
-                switch ($arg[0]) {
-                    case 'SWITCH' :
-                    switch ($protocol) {
-                        case 'RTS' :
-                        $rflink->registerRTS($arg[0],$value);
-                        break;
-                        case 'MiLightv1' :
-                        $rflink->registerMilightv1($arg[0],substr('RGBW=','',$datas[5]));
-                        break;
-                        default :
-                        $rflink->registerSwitch($arg[0],substr('CMD=','',$datas[5]));
-                        //SWITCH=00;CMD=OFF
-                        break;
-                    }
-                    break;
-                    case 'CMD' :
-                    //nothing, it's part of Switch
-                    break;
-                    case 'BAT' :
-                    $rflink->registerBattery($arg[1]);
-                    break;
-                    default :
-                    $rflink->registerInfo($arg[0],$arg[1]);
-                    break;
-                }
+                $args[$arg[1]] = $arg[2];
             }
         }
         $i++;
     }
+    foreach ($args as $type => $value) {
+        log::add('rflink', 'debug', 'Commande ' . $type . ' value ' . $value);
+        switch ($type) {
+            case 'SWITCH' :
+            switch ($protocol) {
+                case 'RTS' :
+                $rflink->registerRTS($value,$datas['CMD']);
+                break;
+                case 'MiLightv1' :
+                $rflink->registerMilightv1($value,$datas['CMD'],$datas['RGBW']);
+                break;
+                default :
+                $rflink->registerSwitch($value,$datas['CMD']);
+                //SWITCH=00;CMD=OFF
+                break;
+            }
+            break;
+            case 'CMD' :
+            //nothing, it's part of Switch
+            break;
+            case 'RGBW' :
+            //nothing, it's part of Switch
+            break;
+            case 'BAT' :
+            $rflink->registerBattery($value);
+            break;
+            default :
+            $rflink->registerInfo($type,$value);
+            break;
+        }
+    }
+}
 }
 
 public static function saveInclude($mode) {

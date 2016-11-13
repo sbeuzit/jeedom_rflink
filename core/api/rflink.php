@@ -25,7 +25,7 @@
  $messageType = init('messagetype');
  $json = file_get_contents('php://input');
  switch ($messageType) {
-   case 'saveValue' : rflink::saveValue($json); break;
+   case 'saveValue' : rflink::receiveData($json); break;
  }
 
  return true;
