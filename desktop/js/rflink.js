@@ -113,7 +113,7 @@ function addCmdToTable(_cmd) {
     tr += '<span class="subType" subType="' + init(_cmd.subType) + '"></span>';
     tr += '</td>';
     tr += '<td>';
-    tr += '<span class="cmdAttr" data-l1key="configuration" data-l2key="request"></span>';
+    tr += '<span class="cmdAttr" data-l1key="logicalId"></span>';
     tr += '</td>';
     tr += '<td>';
     tr += '<span class="cmdAttr" data-l1key="configuration" data-l2key="value"></span>';
@@ -157,9 +157,9 @@ if (init(_cmd.type) == 'action') {
   tr += '<input class="cmdAttr form-control input-sm" data-l1key="name">';
   tr += '</div>';
   tr += '</div>';
-  tr += '<select class="cmdAttr form-control tooltips input-sm" data-l1key="value" style="display : none;margin-top : 5px;" title="{{La valeur de la commande vaut par défaut la commande}}">';
-  tr += '<option value="">Aucune</option>';
-  tr += '</select>';
+  //tr += '<select class="cmdAttr form-control tooltips input-sm" data-l1key="value" style="display : none;margin-top : 5px;" title="{{La valeur de la commande vaut par défaut la commande}}">';
+  //tr += '<option value="">Aucune</option>';
+  //tr += '</select>';
   tr += '</td>';
   tr += '<td>';
   tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom : 5px;" />';
@@ -167,7 +167,7 @@ if (init(_cmd.type) == 'action') {
   //tr += '<input class="cmdAttr" data-l1key="configuration" data-l2key="virtualAction" value="1" style="display:none;" >';
   tr += '</td>';
   tr += '<td>';
-  tr += '<span class="cmdAttr" data-l1key="logicalId"></span>';
+  tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="id">';
   tr += '</td><td>';
   tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request">';
   tr += '</td><td>';

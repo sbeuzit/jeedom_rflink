@@ -136,9 +136,6 @@ class rflink extends eqLogic {
             $rflinkCmd->setLogicalId($_id);
             $rflinkCmd->setType('action');
             $rflinkCmd->setSubType($_subtype);
-            if ($_setval != '0') {
-                $rflinkCmd->setValue($_setval);
-            }
             if ($_maxslider != '0') {
                 $rflinkCmd->setConfiguration('minValue', 0);
                 $rflinkCmd->setConfiguration('maxValue', $_maxslider);
