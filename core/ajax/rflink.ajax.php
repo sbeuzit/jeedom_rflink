@@ -36,18 +36,6 @@ try {
         ajax::success(rflink::saveInclude(init('value')));
     }
 
-    if (init('action') == 'debug') {
-        ajax::success(rflink::echoController( '10;RFUDEBUG=ON;' ));
-    }
-
-    if (init('action') == 'restart') {
-        ajax::success(rflink::echoController( '10;REBOOT;' ));
-    }
-
-    if (init('action') == 'milightActive') {
-        ajax::success(rflink::echoController( '10;milightnrf=on;' ));
-    }
-
     if (init('action') == 'send') {
         ajax::success(rflink::echoController( '11;' . init('value') ));
     }

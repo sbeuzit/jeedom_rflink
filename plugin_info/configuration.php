@@ -68,26 +68,6 @@ if (!isConnect()) {
       </div>
 
       <div class="form-group">
-      <label class="col-lg-4 control-label">{{Logger les trames inconnues}}</label>
-      <div class="col-lg-3">
-      <a class="btn btn-warning bt_debug"><i class="fa fa-bug"></i>
-        Activer
-      </a></div>
-      </div>
-
-      <div class="form-group">
-      <label class="col-lg-4 control-label">{{NRF24L01}}</label>
-      <div class="col-lg-3">
-      <a class="btn btn-success bt_milight"><i class="fa fa-lightbulb-o"></i>
-        Activer Milight
-      </a></div>
-      <div class="col-lg-3">
-      <a class="btn btn-success bt_mySensors"><i class="fa fa-lightbulb-o"></i>
-        Activer mySensors
-      </a></div>
-      </div>
-
-      <div class="form-group">
       <label class="col-lg-4 control-label">{{Envoi de données}}</label>
       <div class="col-lg-3">
         <input name='input_cmd' type='text' class='input_cmd' placeholder=''>
@@ -167,69 +147,6 @@ $('.bt_check').on('click',function(){
     return;
   } else {
     window.location.href = 'index.php?v=d&p=plugin&id=rflink';
-  }
-}
-});
-});
-
-$('.bt_restart').on('click',function(){
-      $.ajax({// fonction permettant de faire de l'ajax
-      type: "POST", // méthode de transmission des données au fichier php
-      url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
-      data: {
-        action: "restart",
-      },
-      dataType: 'json',
-      global: false,
-      error: function (request, status, error) {
-        handleAjaxError(request, status, error);
-      },
-      success: function (data) { // si l'appel a bien fonctionné
-      if (data.state != 'ok') {
-        $('#div_alert').showAlert({message: data.result, level: 'danger'});
-        return;
-      }
-    }
-  });
-});
-
-$('.bt_debug').on('click',function(){
-  $.ajax({// fonction permettant de faire de l'ajax
-  type: "POST", // méthode de transmission des données au fichier php
-  url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
-  data: {
-    action: "debug",
-  },
-  dataType: 'json',
-  global: false,
-  error: function (request, status, error) {
-    handleAjaxError(request, status, error);
-  },
-  success: function (data) { // si l'appel a bien fonctionné
-  if (data.state != 'ok') {
-    $('#div_alert').showAlert({message: data.result, level: 'danger'});
-    return;
-  }
-}
-});
-});
-
-$('.bt_milight').on('click',function(){
-  $.ajax({// fonction permettant de faire de l'ajax
-  type: "POST", // méthode de transmission des données au fichier php
-  url: "plugins/rflink/core/ajax/rflink.ajax.php", // url du fichier php
-  data: {
-    action: "milightActive",
-  },
-  dataType: 'json',
-  global: false,
-  error: function (request, status, error) {
-    handleAjaxError(request, status, error);
-  },
-  success: function (data) { // si l'appel a bien fonctionné
-  if (data.state != 'ok') {
-    $('#div_alert').showAlert({message: data.result, level: 'danger'});
-    return;
   }
 }
 });

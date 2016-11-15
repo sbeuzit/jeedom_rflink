@@ -20,12 +20,14 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function rflink_install() {
     $sensor_path = dirname(__FILE__) . '/../node';
-		exec('cd ' . $sensor_path . '; rm -rf node_modules');
+	exec('cd ' . $sensor_path . '; rm -rf node_modules');
+    rflink::checkInstall();
 }
 
 function rflink_update() {
     $sensor_path = dirname(__FILE__) . '/../node';
-		exec('cd ' . $sensor_path . '; rm -rf node_modules');
+	exec('cd ' . $sensor_path . '; rm -rf node_modules');
+    rflink::checkInstall();
 }
 
 ?>

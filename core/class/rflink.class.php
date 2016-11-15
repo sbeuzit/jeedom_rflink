@@ -146,6 +146,20 @@ class rflink extends eqLogic {
         }
     }
 
+    public function checkInstall() {
+        $rflink = rflink::byLogicalId('rflink','rflink');
+        if (!is_object($eqLogic)) {
+            $rflink = new rflink();
+            $rflink->setEqType_name('rflink');
+            $rflink->setLogicalId('rflink');
+            $rflink->setName('Rflink');
+            $rflink->save();
+        }
+        $rflink->checkActOk('debugon', 'Activer Debug', 'other', 'rflink', '10;RFUDEBUG=ON;', '0');
+        $rflink->checkActOk('debugoff', 'Désactiver Debug', 'other', 'rflink', '10;RFUDEBUG=OFF;', '0');
+        $rflink->checkActOk('reboot', 'Reboot', 'other', 'rflink', '10;REBOOT;', '0');
+    }
+
     public function checkHexaCmd($_cmd, $_value) {
         $hexacmd = 'TEMP,BARO,UV,LUX,,RAIN,RAINRATE,WINSP,AWINSP,WINGS,WINCHL,WINTMP,KWATT,WATT';
         if (strpos($hexacmd,$_cmd) !== false) {
@@ -277,6 +291,25 @@ class rflink extends eqLogic {
         }
     }
 
+    public function setStatus($_data) {
+        log::add('rflink', 'debug', 'Status ' . $_data);
+        $datas = explode(";", $data);
+        $i = 0;
+        foreach ($datas as $info) {
+            if ($i > 2) {
+                if (strpos($info,'=') !== false) {
+                    $arg = explode("=", $info);
+                    $arg[0] = $arg[1];
+                    $this->checkCmdOk($arg[0], $arg[0], 'string', $arg[1]);
+                    $this->checkAndUpdateCmd($arg[0], $arg[1]);
+                    $this->checkActOk($arg[0] . 'off', $arg[0] . ' Off', 'other', '0', '10;' . $arg[0] . '=OFF;', '0');
+                    $this->checkActOk($arg[0] . 'on', $arg[0] . ' On', 'other', '0', '10;' . $arg[0] . '=ON;', '0');
+                }
+            }
+            $i++;
+        }
+    }
+
     public static function receiveData($json) {
         //log::add('rflink', 'debug', 'Body ' . print_r($json,true));
         $body = json_decode($json, true);
@@ -299,6 +332,11 @@ class rflink extends eqLogic {
         }
 
         $protocol = $datas[2];
+
+        if ($protocol == 'STATUS') {
+            //status line need special treatment
+            rflink::setStatus($data);
+        }
 
         if (strpos($datas[3],'ID=') !== false) {
             $id = str_replace('ID=', '', $datas[3]);
@@ -334,6 +372,7 @@ class rflink extends eqLogic {
     }
 
     $rflink = self::byLogicalId($nodeid, 'rflink');
+    $rflink->setConfiguration('lastCommunication', date('Y-m-d H:i:s'));
     $rflink->save();
 
     $i=0;
@@ -472,6 +511,7 @@ public static function deamon_start() {
     }
     message::removeAll('rflink', 'unableStartDeamon');
     log::add('rflink', 'info', 'Démon rflink lancé');
+    rflink::echoController('10;STATUS;');
     return true;
 }
 
@@ -553,6 +593,10 @@ class rflinkCmd extends cmd {
                 case 'other':
                 if ($eqLogic->getConfiguration('protocol') == 'MiLightv1') {
                     $request = $eqLogic->setColorMilight($this->getConfiguration('id'),$this->getLogicalId(),'other');
+                } else if ($eqLogic->getConfiguration('protocol') == 'rflink') {
+                    rflink::echoController($request);
+                    rflink::echoController('10;STATUS;');
+                    return true;
                 } else {
                     $request = $request;
                     $binary = ($request == 'OFF') ? '0' : '1';
