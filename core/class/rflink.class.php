@@ -147,7 +147,7 @@ class rflink extends eqLogic {
     }
 
     public function checkInstall() {
-        $rflink = rflink::byLogicalId('rflink','rflink');
+        $rflink = rflink::byLogicalId('rflink_gateway','rflink');
         if (!is_object($eqLogic)) {
             $rflink = new rflink();
             $rflink->setEqType_name('Rflink Gateway');
@@ -295,9 +295,9 @@ class rflink extends eqLogic {
 
     public function setRflinkStatus($_data) {
         log::add('rflink', 'debug', 'Status ' . $_data);
-        $datas = explode(";", $data);
+        $datas = explode(";", $_data);
         $i = 0;
-        $rflink = rflink::byLogicalId('rflink','rflink_gateway');
+        $rflink = rflink::byLogicalId('rflink_gateway','rflink');
         foreach ($datas as $info) {
             if ($i > 2) {
                 if (strpos($info,'=') !== false) {
