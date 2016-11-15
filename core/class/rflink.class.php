@@ -251,7 +251,7 @@ class rflink extends eqLogic {
     }
 
     public function registerBattery($_value) {
-        $battery = ($_value == 'LOW') ? '10' : '100';
+        $battery = ($_value == 'LOW') ? '10' : '90';
         $this->batteryStatus($battery);
         $this->save();
         log::add('rflink', 'debug', 'Batterie ' . $_value . ' value ' . $battery);
@@ -267,8 +267,9 @@ class rflink extends eqLogic {
                 } else {
                     $_value = hexdec(substr($_value, -3));
                 }
+            } else {
+                $_value = $this->checkHexaCmd($_cmd,$_value);
             }
-            $_value = $this->checkHexaCmd($_cmd,$_value);
             $_value = $this->checkDivCmd($_cmd,$_value);
             $cmds = $this->getCmd();
             $this->checkCmdOk($_cmd, $_cmd . ' - ' . count($cmds), rflink::checkNumCmd($_cmd), $_value);
