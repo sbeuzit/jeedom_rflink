@@ -291,7 +291,7 @@ class rflink extends eqLogic {
         }
     }
 
-    public function setStatus($_data) {
+    public function setRflinkStatus($_data) {
         log::add('rflink', 'debug', 'Status ' . $_data);
         $datas = explode(";", $data);
         $i = 0;
@@ -335,7 +335,7 @@ class rflink extends eqLogic {
 
         if ($protocol == 'STATUS') {
             //status line need special treatment
-            rflink::setStatus($data);
+            rflink::setRflinkStatus($data);
         }
 
         if (strpos($datas[3],'ID=') !== false) {
