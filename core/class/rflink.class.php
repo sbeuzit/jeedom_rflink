@@ -154,6 +154,7 @@ class rflink extends eqLogic {
             $result = $_value;
         }
         return $result;
+        log::add('rflink', 'debug', 'HexaCmd ' . $_value . ' value ' . $result);
     }
 
     public function checkNumCmd($_cmd) {
@@ -174,6 +175,7 @@ class rflink extends eqLogic {
             $result = $_value;
         }
         return $result;
+        log::add('rflink', 'debug', 'DivCmd ' . $_value . ' value ' . $result);
     }
 
     public function registerRTS($_cmd, $_value) {
@@ -252,6 +254,7 @@ class rflink extends eqLogic {
         $battery = ($_value == 'LOW') ? '10' : '100';
         $this->batteryStatus($battery);
         $this->save();
+        log::add('rflink', 'debug', 'Batterie ' . $_value . ' value ' . $battery);
     }
 
     public function registerInfo($_cmd, $_value) {
@@ -368,6 +371,7 @@ class rflink extends eqLogic {
             break;
             case 'BAT' :
             $rflink->registerBattery($value);
+            $rflink->registerInfo($type,$value);
             break;
             default :
             $rflink->registerInfo($type,$value);

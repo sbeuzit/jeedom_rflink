@@ -254,8 +254,8 @@ if ($state == 1) {
               <th style="width: 150px;">{{Nom}}</th>
               <th style="width: 110px;">{{Type}}</th>
               <th style="width: 110px;">{{Capteur}}</th>
-              <th style="width: 110px;">{{Valeur}}</th>
-              <th style="width: 100px;">{{Donnée}}</th>
+              <th style="width: 110px;">{{Commande}}</th>
+              <th style="width: 100px;">{{Unité}}</th>
               <th style="width: 200px;">{{Paramètres}}</th>
               <th style="width: 100px;"></th>
             </tr>
