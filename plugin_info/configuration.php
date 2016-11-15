@@ -76,10 +76,14 @@ if (!isConnect()) {
       </div>
 
       <div class="form-group">
-      <label class="col-lg-4 control-label">{{Milight}}</label>
+      <label class="col-lg-4 control-label">{{NRF24L01}}</label>
       <div class="col-lg-3">
       <a class="btn btn-success bt_milight"><i class="fa fa-lightbulb-o"></i>
-        Activer
+        Activer Milight
+      </a></div>
+      <div class="col-lg-3">
+      <a class="btn btn-success bt_mySensors"><i class="fa fa-lightbulb-o"></i>
+        Activer mySensors
       </a></div>
       </div>
 
