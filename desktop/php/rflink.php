@@ -193,7 +193,7 @@ if ($state == 1) {
               <div class="form-group">
                 <label class="col-sm-3 control-label">{{Dernière Activité}}</label>
                 <div class="col-sm-3">
-                  <span class="eqLogicAttr" data-l1key="configuration" data-l2key="updatetime"></span>
+                  <span class="eqLogicAttr" data-l1key="configuration" data-l2key="lastCommunication"></span>
                 </div>
               </div>
 
