@@ -82,7 +82,7 @@ function launchGateway() {
   	});
 
     var com = require("serialport");
-	gw = new com.SerialPort(gwAddress, {
+	gw = new com(gwAddress, {
 		baudrate: 57600,
 		parser: com.parsers.readline('\r\n')
     });

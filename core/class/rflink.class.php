@@ -295,15 +295,16 @@ class rflink extends eqLogic {
         log::add('rflink', 'debug', 'Status ' . $_data);
         $datas = explode(";", $data);
         $i = 0;
+        $rflink = rflink::byLogicalId('rflink','rflink');
         foreach ($datas as $info) {
             if ($i > 2) {
                 if (strpos($info,'=') !== false) {
                     $arg = explode("=", $info);
                     $arg[0] = $arg[1];
-                    $this->checkCmdOk($arg[0], $arg[0], 'string', $arg[1]);
-                    $this->checkAndUpdateCmd($arg[0], $arg[1]);
-                    $this->checkActOk($arg[0] . 'off', $arg[0] . ' Off', 'other', '0', '10;' . $arg[0] . '=OFF;', '0');
-                    $this->checkActOk($arg[0] . 'on', $arg[0] . ' On', 'other', '0', '10;' . $arg[0] . '=ON;', '0');
+                    $rflink->checkCmdOk($arg[0], $arg[0], 'string', $arg[1]);
+                    $rflink->checkAndUpdateCmd($arg[0], $arg[1]);
+                    $rflink->checkActOk($arg[0] . 'off', $arg[0] . ' Off', 'other', '0', '10;' . $arg[0] . '=OFF;', '0');
+                    $rflink->checkActOk($arg[0] . 'on', $arg[0] . ' On', 'other', '0', '10;' . $arg[0] . '=ON;', '0');
                 }
             }
             $i++;
