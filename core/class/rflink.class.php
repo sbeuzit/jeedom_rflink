@@ -394,7 +394,7 @@ public static function saveInclude($mode) {
 );
 }
 
-public function postUpdate() {
+public function preSave() {
     $nodeid = $this->getConfiguration('protocol') . '_' . $this->getConfiguration('id');
     $this->setLogicalId($nodeid);
 }
