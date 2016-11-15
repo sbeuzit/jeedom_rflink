@@ -306,6 +306,7 @@ class rflink extends eqLogic {
                 if (strpos($info,'=') !== false) {
                     $arg = explode("=", $info);
                     $arg[0] = $arg[1];
+                    log::add('rflink', 'debug', 'Status ' . $arg[0] . ' is ' . $arg[1]);
                     $rflink->checkCmdOk($arg[0], $arg[0], 'string', $arg[1]);
                     $rflink->checkAndUpdateCmd($arg[0], $arg[1]);
                     $rflink->checkActOk($arg[0] . 'off', $arg[0] . ' Off', 'other', '0', '10;' . $arg[0] . '=OFF;', '0');
@@ -342,6 +343,7 @@ class rflink extends eqLogic {
         if ($protocol == 'STATUS') {
             //status line need special treatment
             rflink::setRflinkStatus($data);
+            return true;
         }
 
         if (strpos($datas[3],'ID=') !== false) {
