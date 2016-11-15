@@ -297,7 +297,7 @@ class rflink extends eqLogic {
         log::add('rflink', 'debug', 'Status ' . $_data);
         $datas = explode(";", $data);
         $i = 0;
-        $rflink = rflink::byLogicalId('rflink','rflink');
+        $rflink = rflink::byLogicalId('rflink','rflink_gateway');
         foreach ($datas as $info) {
             if ($i > 2) {
                 if (strpos($info,'=') !== false) {
