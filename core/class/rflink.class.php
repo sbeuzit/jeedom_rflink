@@ -150,11 +150,13 @@ class rflink extends eqLogic {
         $rflink = rflink::byLogicalId('rflink','rflink');
         if (!is_object($eqLogic)) {
             $rflink = new rflink();
-            $rflink->setEqType_name('rflink');
-            $rflink->setLogicalId('rflink');
+            $rflink->setEqType_name('Rflink Gateway');
+            $rflink->setLogicalId('rflink_gateway');
             $rflink->setName('Rflink');
-            $rflink->save();
         }
+        $rflink->setConfiguration('protocol','rflink');
+        $rflink->setConfiguration('protocol','gateway');
+        $rflink->save();
         $rflink->checkActOk('debugon', 'Activer Debug', 'other', 'rflink', '10;RFUDEBUG=ON;', '0');
         $rflink->checkActOk('debugoff', 'Désactiver Debug', 'other', 'rflink', '10;RFUDEBUG=OFF;', '0');
         $rflink->checkActOk('reboot', 'Reboot', 'other', 'rflink', '10;REBOOT;', '0');
