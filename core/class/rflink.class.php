@@ -155,7 +155,7 @@ class rflink extends eqLogic {
             $rflink->setName('Rflink Gateway');
         }
         $rflink->setConfiguration('protocol','rflink');
-        $rflink->setConfiguration('protocol','gateway');
+        $rflink->setConfiguration('id','gateway');
         $rflink->save();
         $rflink->checkActOk('debugon', 'Activer Debug', 'other', 'rflink', '10;RFUDEBUG=ON;', '0');
         $rflink->checkActOk('debugoff', 'Désactiver Debug', 'other', 'rflink', '10;RFUDEBUG=OFF;', '0');
