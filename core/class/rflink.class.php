@@ -514,6 +514,7 @@ public static function deamon_start() {
     }
     message::removeAll('rflink', 'unableStartDeamon');
     log::add('rflink', 'info', 'Démon rflink lancé');
+    sleep(5);
     rflink::echoController('10;STATUS;');
     return true;
 }
