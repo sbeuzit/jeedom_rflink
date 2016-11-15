@@ -394,11 +394,9 @@ public static function saveInclude($mode) {
 );
 }
 
-public function postUpdate() {
-    $nodeid = $this->getConfiguration('protocol') . '_' . $this->getConfiguration('id');
-    $this->setLogicalId($nodeid);
-    $this->save();
-}
+public function preSave() {
+    $this->setLogicalId($this->getConfiguration('protocol') . '_' . $this->getConfiguration('id'));
+  }
 
 public static function deamon_info() {
     $return = array();
