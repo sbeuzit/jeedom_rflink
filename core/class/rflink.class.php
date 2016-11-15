@@ -150,9 +150,9 @@ class rflink extends eqLogic {
         $rflink = rflink::byLogicalId('rflink_gateway','rflink');
         if (!is_object($eqLogic)) {
             $rflink = new rflink();
-            $rflink->setEqType_name('Rflink Gateway');
+            $rflink->setEqType_name('rflink');
             $rflink->setLogicalId('rflink_gateway');
-            $rflink->setName('Rflink');
+            $rflink->setName('Rflink Gateway');
         }
         $rflink->setConfiguration('protocol','rflink');
         $rflink->setConfiguration('protocol','gateway');
@@ -298,6 +298,9 @@ class rflink extends eqLogic {
         $datas = explode(";", $_data);
         $i = 0;
         $rflink = rflink::byLogicalId('rflink_gateway','rflink');
+        if (!is_object($rflink)) {
+            return false;
+        }
         foreach ($datas as $info) {
             if ($i > 2) {
                 if (strpos($info,'=') !== false) {
