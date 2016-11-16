@@ -270,7 +270,7 @@ class rflink extends eqLogic {
     }
 
     public function registerBattery($_value) {
-        $battery = ($_value == 'LOW') ? '10' : '90';
+        $battery = ($_value == 'LOW') ? 10 : 100;
         $this->batteryStatus($battery);
         $this->save();
         log::add('rflink', 'debug', 'Batterie ' . $_value . ' value ' . $battery);
