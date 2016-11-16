@@ -305,7 +305,6 @@ class rflink extends eqLogic {
             if ($i > 2) {
                 if (strpos($info,'=') !== false) {
                     $arg = explode("=", $info);
-                    $arg[0] = $arg[1];
                     log::add('rflink', 'debug', 'Status ' . $arg[0] . ' is ' . $arg[1]);
                     $rflink->checkCmdOk($arg[0], $arg[0], 'string', $arg[1]);
                     $rflink->checkAndUpdateCmd($arg[0], $arg[1]);
