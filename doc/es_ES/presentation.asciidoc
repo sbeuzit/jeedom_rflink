@@ -1,4 +1,3 @@
-'''
 === RFLink, passerelle Arduino pour les protocoles RF433
 
 RFLink est une passerelle RF433 basée sur un Arduino Mega et un transceiver RF433
@@ -12,3 +11,7 @@ http://www.nemcon.nl/blog2/
 Pour se procurer le kit Rflink :
 
 http://www.nodo-shop.nl/nl/21-rflink-gateway
+
+La liste des périphériques compatibles :
+
+http://www.nemcon.nl/blog2/devlist

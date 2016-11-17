@@ -422,28 +422,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_configuration">2. Configuration</a>
 <ul class="sectlevel2">
-<li><a href="#_pré_requis_système">2.1. Pré-requis système</a>
+<li><a href="#_configuration_du_plugin">2.1. Configuration du plugin</a>
 <ul class="sectlevel3">
-<li><a href="#_serial_gateway">2.1.1. Serial Gateway</a></li>
-</ul>
-</li>
-<li><a href="#_configuration_du_plugin">2.2. Configuration du plugin</a>
-<ul class="sectlevel3">
-<li><a href="#_configuration_du_mode">2.2.1. Configuration du mode</a></li>
-<li><a href="#_configuration_du_port">2.2.2. Configuration du port</a></li>
-<li><a href="#_configuration_de_l_inclusion">2.2.3. Configuration de l&#8217;inclusion</a></li>
-</ul>
-</li>
-<li><a href="#_menu_rflink">2.3. Menu Rflink</a>
-<ul class="sectlevel3">
-<li><a href="#_configuration_des_nodes_et_leurs_capteurs">2.3.1. Configuration des nodes et leurs capteurs</a></li>
-<li><a href="#_configuration_des_commandes_des_nodes">2.3.2. Configuration des commandes des nodes</a></li>
+<li><a href="#_configuration_de_l_inclusion">2.1.1. Configuration de l&#8217;inclusion</a></li>
+<li><a href="#_configuration_des_nodes_et_leurs_capteurs">2.1.2. Configuration des nodes et leurs capteurs</a></li>
+<li><a href="#_configuration_des_commandes_des_nodes">2.1.3. Configuration des commandes des nodes</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#_faq">3. FAQ</a></li>
-<li><a href="#_troubleshoting">4. Troubleshoting</a></li>
 </ul>
 </div>
 </div>
@@ -451,7 +439,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_description">1. Description</h2>
 <div class="sectionbody">
-<hr>
 <div class="sect2">
 <h3 id="_rflink_passerelle_arduino_pour_les_protocoles_rf433">1.1. RFLink, passerelle Arduino pour les protocoles RF433</h3>
 <div class="paragraph">
@@ -472,6 +459,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p><a href="http://www.nodo-shop.nl/nl/21-rflink-gateway" class="bare">http://www.nodo-shop.nl/nl/21-rflink-gateway</a></p>
 </div>
+<div class="paragraph">
+<p>La liste des périphériques compatibles :</p>
+</div>
+<div class="paragraph">
+<p><a href="http://www.nemcon.nl/blog2/devlist" class="bare">http://www.nemcon.nl/blog2/devlist</a></p>
+</div>
 <hr>
 </div>
 </div>
@@ -480,96 +473,51 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_configuration">2. Configuration</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_pré_requis_système">2.1. Pré-requis système</h3>
+<h3 id="_configuration_du_plugin">2.1. Configuration du plugin</h3>
 <div class="paragraph">
-<p>En fonction du type de gateway, des pré-requis peuvent être nécessaire. Ceux ci sont normalement pris en charge par l&#8217;installation du plugin.</p>
-</div>
-<hr>
-<div class="sect3">
-<h4 id="_serial_gateway">2.1.1. Serial Gateway</h4>
-<div class="paragraph">
-<p>Jeedom pour pouvoir communiquer avec une Gateway sur port USB a besoin du module serialport pour nodejs.</p>
-</div>
-<div class="paragraph">
-<p>Normalement cette installation est faite par le plugin lors de son activation.</p>
-</div>
-<hr>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_configuration_du_plugin">2.2. Configuration du plugin</h3>
-<div class="paragraph">
-<p>La première étape de configuration se fait sur la page du plugin sur votre Jeedom maître.</p>
-</div>
-<div class="paragraph">
-<p>Elle permettra de configurer la connexion avec la gateway.</p>
-</div>
-<hr>
-<div class="sect3">
-<h4 id="_configuration_du_mode">2.2.1. Configuration du mode</h4>
-<div class="paragraph">
-<p>Plusieurs modes sont disponibles pour Rflink :</p>
+<p>Sur la page du plugin on peut :</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Gateway sur Jeedom maître : pour utiliser le service controlleur en local (à choisir pour un gateway branchée localement)</p>
+<p>Voir la version actuelle du firmware de la gateway</p>
 </li>
 <li>
-<p>Gateway sur un Jeedom Esclave (la liste des esclaves apparait) : pour utiliser le controleur sur un Jeedom déporté (à choisir pour un gateway branchée sur un esclave)</p>
+<p>Flasher et upgrader la version de firmware</p>
+</li>
+<li>
+<p>Configurer le port USB de la gateway ou indiquer si c&#8217;est une réseau</p>
+</li>
+<li>
+<p>Entrer l&#8217;adresse réseau si c&#8217;est une gateway réseau (avec le port d&#8217;écoute)</p>
 </li>
 </ul>
 </div>
-<hr>
-</div>
 <div class="sect3">
-<h4 id="_configuration_du_port">2.2.2. Configuration du port</h4>
-<div class="paragraph">
-<p>Si on a choisi une connexion USB sur un Jeedom, la liste des ports est constituée de :</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>la liste des périphériques USB branchés au Jeedom sélectionné, celle-ci est automatique</p>
-</li>
-<li>
-<p>la possibilité de choisir une connexion série (dans ce cas, il faudra remplir un champ libre avec le port)</p>
-</li>
-</ul>
-</div>
-<hr>
-</div>
-<div class="sect3">
-<h4 id="_configuration_de_l_inclusion">2.2.3. Configuration de l&#8217;inclusion</h4>
+<h4 id="_configuration_de_l_inclusion">2.1.1. Configuration de l&#8217;inclusion</h4>
 <div class="paragraph">
 <p>Ce choix permet de décider si le controleur va créer des nouveaux équipements Jeedom pour les périphériques détectés et inconnus.</p>
 </div>
 <div class="paragraph">
 <p>En le passant en "désactivé", aucun nouvel équipement n&#8217;apparaitra dans Jeedom.</p>
 </div>
-<hr>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_menu_rflink">2.3. Menu Rflink</h3>
 <div class="paragraph">
-<p>Vous retrouverez toute la configuration des équipements (informations et commandes) dans le menu Plugins&#8594;Protocole domotique&#8594;Rflink</p>
+<p>Il est accessible sur la page équipement Rflink</p>
 </div>
-<hr>
+</div>
 <div class="sect3">
-<h4 id="_configuration_des_nodes_et_leurs_capteurs">2.3.1. Configuration des nodes et leurs capteurs</h4>
+<h4 id="_configuration_des_nodes_et_leurs_capteurs">2.1.2. Configuration des nodes et leurs capteurs</h4>
 <div class="paragraph">
-<p>Les équipements Jeedom sont automatiquement créés au démarrage des nodes.</p>
+<p>Les équipements Jeedom sont automatiquement créés à l&#8217;envoi des informations des sondes.</p>
 </div>
 <div class="paragraph">
 <p>De la même facon que les équipements sont automatiquement créés à l&#8217;arrivée de nouveaux périphériques, les capteurs des nodes sont automatiquement créés comme des "Informations" dans Jeedom ainsi que les commandes RECUES (il faut créer des commandes dans ce cas).</p>
 </div>
-<hr>
 </div>
 <div class="sect3">
-<h4 id="_configuration_des_commandes_des_nodes">2.3.2. Configuration des commandes des nodes</h4>
+<h4 id="_configuration_des_commandes_des_nodes">2.1.3. Configuration des commandes des nodes</h4>
 <div class="paragraph">
-<p>Les commandes ne sont pas créées automatiquement.</p>
+<p>Les commandes ne sont pas toutes créées automatiquement.</p>
 </div>
 <div class="paragraph">
 <p>Pour en créer une, il faut :</p>
@@ -583,7 +531,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>puis il faut remplir le champ valeur en indiquant la bonne valeur SWITCH;CMD</p>
 </li>
 <li>
-<p>SWITCH;CMD correspondant à la colonne capteur du signal qu&#8217;on souhaite reproduire</p>
+<p>SWITCH dans la colonne capteur</p>
+</li>
+<li>
+<p>CMD dans la colonne information</p>
 </li>
 </ul>
 </div>
@@ -645,12 +596,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
-<hr>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_troubleshoting">4. Troubleshoting</h2>
-<div class="sectionbody">
 <div class="openblock panel">
 <div class="title">Aucun équipement ne se créé</div><div class="content">
 <div class="paragraph">
