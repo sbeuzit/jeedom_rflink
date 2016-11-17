@@ -163,6 +163,7 @@ class rflink extends eqLogic {
         $rflink->checkActOk('debugon', 'Activer Debug', 'other', 'rflink', '10;RFUDEBUG=ON;', '0');
         $rflink->checkActOk('debugoff', 'Désactiver Debug', 'other', 'rflink', '10;RFUDEBUG=OFF;', '0');
         $rflink->checkActOk('reboot', 'Reboot', 'other', 'rflink', '10;REBOOT;', '0');
+        rflink::check();
     }
 
     public function checkHexaCmd($_cmd, $_value) {
