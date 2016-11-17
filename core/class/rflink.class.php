@@ -20,14 +20,19 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class rflink extends eqLogic {
 
     public static function cronDaily() {
-        rflink::check();
+        rflink::check('daily');
     }
 
-    public static function check() {
+    public static function check($type) {
         $xml = new DOMDocument();
         $gateway = config::byKey('gateLib','rflink');
-        $release = substr($gateway, -2);
-        $version = substr($gateway, -9, 3);
+        if ($type = 'install') {
+            $release = '38';
+            $version = '1';
+        } else {
+            $release = substr($gateway, -2);
+            $version = substr($gateway, -9, 3);
+        }
         $url = 'http://www.nemcon.nl/blog2/fw/update.jsp?ver=' . $version . '&rel=' . $release;
         $xml->load($url);
         log::add('rflink','debug','Recherche firmware ' .  $url );
@@ -163,7 +168,7 @@ class rflink extends eqLogic {
         $rflink->checkActOk('debugon', 'Activer Debug', 'other', 'rflink', '10;RFUDEBUG=ON;', '0');
         $rflink->checkActOk('debugoff', 'Désactiver Debug', 'other', 'rflink', '10;RFUDEBUG=OFF;', '0');
         $rflink->checkActOk('reboot', 'Reboot', 'other', 'rflink', '10;REBOOT;', '0');
-        rflink::check();
+        rflink::check('install');
     }
 
     public function checkHexaCmd($_cmd, $_value) {
