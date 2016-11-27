@@ -23,7 +23,7 @@ class rflink extends eqLogic {
         rflink::check('daily');
     }
 
-    public static function check($type) {
+    public static function check($type = 'default') {
         $xml = new DOMDocument();
         $gateway = config::byKey('gateLib','rflink');
         if ($type = 'install') {
