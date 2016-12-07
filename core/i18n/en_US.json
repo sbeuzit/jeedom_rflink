@@ -1,21 +1,21 @@
 {
     "plugins\/rflink\/plugin_info\/configuration.php": {
-        "Flasher le RFLink": "Flasher le RFLink",
+        "Flasher le RFLink": "Flash the RFLink",
         "Vérifier les mises à jour de firmware": "Vérifier les mises à jour de firmware",
         "Redémarrer le RFLink": "Redémarrer le RFLink",
         "Logger les trames inconnues": "Logger les trames inconnues",
         "Milight": "Milight",
-        "Envoi de données": "Envoi de données",
+        "Envoi de données": "Data send",
         "RFLink USB": "RFLink USB",
-        "Aucun": "Aucun",
-        "RFLink réseau": "RFLink réseau",
+        "Aucun": "None",
+        "RFLink réseau": "RFLink network",
         "Etes-vous sûr de vouloir flasher le RFLink ? ": "Etes-vous sûr de vouloir flasher le RFLink ? "
     },
     "plugins\/rflink\/desktop\/php\/rflink.php": {
-        "Ajouter un équipement": "Ajouter un équipement",
+        "Ajouter un équipement": "Add equipment",
         "Inclure périphérique RF": "Inclure périphérique RF",
         "Mode inclusion": "Mode inclusion",
-        "Rechercher": "Rechercher",
+        "Rechercher": "Search",
         "Gestion": "Gestion",
         "Configuration": "Configuration",
         "Santé": "Santé",
