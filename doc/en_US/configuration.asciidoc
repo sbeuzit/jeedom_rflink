@@ -1,10 +1,10 @@
 === The plugin configuration
 
-Sur la page du plugin on peut :
+On the configuration page of the plugin
 
   * Voir la version actuelle du firmware de la gateway
 
-  * Flasher et upgrader la version de firmware
+  * Flash and upgrade the firmware version
 
   * Configurer le port USB de la gateway ou indiquer si c'est une réseau
 
