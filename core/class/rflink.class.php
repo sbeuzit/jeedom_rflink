@@ -616,7 +616,7 @@ class rflinkCmd extends cmd {
                     return true;
                 } else {
                     $request = $request;
-                    $binary = ($request == 'OFF') ? '0' : '1';
+                    $binary = ($request == 'OFF' || $request == 'ALLOFF') ? '0' : '1';
                     $eqLogic->checkAndUpdateCmd($id, $binary);
                 }
                 break;
