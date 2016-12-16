@@ -218,6 +218,7 @@ class rflink extends eqLogic {
         //checkCmdOk($_id, $_name, $_subtype, $_value)
         //checkActOk($_id, $_name, $_subtype, $_cmdid, $_request, $_maxslider)
         $this->checkCmdOk($_cmd, 'Etat Lampe ' . $_cmd, 'string', $_value);
+        $this->checkAndUpdateCmd($_cmd, $_value);
         $this->checkActOk('ON' . $_cmd, 'On ' . $_cmd, 'other', $_cmd, 'ON', '0');
         $this->checkActOk('ALLON' . $_cmd, 'All On ' . $_cmd, 'other', $_cmd, 'ALLON', '0');
         $this->checkActOk('OFF' . $_cmd, 'Off ' . $_cmd, 'other', $_cmd, 'OFF', '0');
