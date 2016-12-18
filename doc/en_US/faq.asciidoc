@@ -39,7 +39,7 @@ Puis appuyer sur le bouton "Tester" de la commande PAIR
 --
 
 [panel,danger]
-.Aucun équipement ne se créé
+. No equipment got created
 --
 Sur la page de configuration vous pouvez vérifier que le service du plugin est démarré et connecté.
 
