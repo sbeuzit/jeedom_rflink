@@ -1,4 +1,4 @@
-=== RFLink, passerelle Arduino pour les protocoles RF433
+=== RFLink, Arduino gateway for RF433 protocols
 
 RFLink est une passerelle RF433 basée sur un Arduino Mega et un transceiver RF433
 
