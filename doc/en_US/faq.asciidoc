@@ -1,5 +1,5 @@
 [panel,primary]
-.Quel type de gateway rflink est supporté ?
+. What type of rflink gateway is supported?
 --
 RFLink utilise un Arduino Mega, celui-ci doit être branché en USB sur un Jeedom (maître ou esclave)
 
