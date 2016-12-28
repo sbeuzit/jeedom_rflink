@@ -1,6 +1,6 @@
 === RFLink, Arduino gateway for RF433 protocols
 
-RFLink est une passerelle RF433 basée sur un Arduino Mega et un transceiver RF433
+RFLink is a RF433 gateway based on an Arduino Mega and a transceiver RF433
 
 La passerelle reconnait en standard un grand nombre de protocoles et périphériques
 
