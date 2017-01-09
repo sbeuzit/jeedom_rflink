@@ -368,7 +368,36 @@ class rflink extends eqLogic {
         $nodeid = $protocol . '_' . $id;
         log::add('rflink', 'debug', 'Protocole ' . $protocol . ' ID ' . $id);
 
+
         $rflink = self::byLogicalId($nodeid, 'rflink');
+
+        // ----------------------------------------------------------------------------------- 
+        // Patch to search for a  generic sensor in case real one is not found and generic one
+        // is defined in database
+        // -----------------------------------------------------------------------------------
+        // First xheck if this sensor is known
+        // (some devices randomly change their id, e.g. Mareva pool sensors using Auriol protocol
+        //  - micro-outages of power supply?)
+        if (!is_object($rflink))
+        {
+          // If not look for a generic one (ID:*) and use it if found
+          $nodeid_generic = $protocol . '_*';
+          $rflink_generic = self::byLogicalId($nodeid_generic, 'rflink');
+          // Check for generic entry (something like 'Auriol V3_*' in DB (logicalId field)
+          // and 'Auriol V3' for protocol (configuration field)
+          if (is_object($rflink_generic))
+          {
+            $rflink = $rflink_generic;
+            $nodeid = $nodeid_generic;
+          }
+	  else
+	  {
+	    // No generic entry found (or format changed as from 'Auriol_*' to 'Auriol V3_*')
+            log::add('rflink', 'debug', 'No generic entry '.$nodeid_generic.' found in database!');
+	  }
+        }
+        // ----------------------------------------------------------------------------------- 
+
         if (!is_object($rflink) && config::byKey('include_mode', 'rflink') == '1') {
             $rflink = new rflink();
             $rflink->setEqType_name('rflink');
@@ -387,7 +416,6 @@ class rflink extends eqLogic {
     if (!is_object($rflink)) {
         return false;
     }
-
     $rflink = self::byLogicalId($nodeid, 'rflink');
     $rflink->setConfiguration('lastCommunication', date('Y-m-d H:i:s'));
     $rflink->save();
