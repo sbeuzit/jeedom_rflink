@@ -6,7 +6,7 @@ RFLink utilise un Arduino Mega, celui-ci doit être branché en USB sur un Jeedo
 --
 
 [panel,primary]
-.Qu'est-ce que rflink ?
+.Was ist RFlink?
 --
 RFLink est une gateway pour les protocoles sans fil RF433
 

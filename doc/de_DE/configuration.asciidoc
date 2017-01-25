@@ -10,7 +10,7 @@ Sur la page du plugin on peut :
 
   * Entrer l'adresse réseau si c'est une gateway réseau (avec le port d'écoute)
 
-==== Configuration de l'inclusion
+==== Inclusions Konfiguration 
 
 Ce choix permet de décider si le controleur va créer des nouveaux équipements Jeedom pour les périphériques détectés et inconnus.
 
@@ -26,7 +26,7 @@ Les équipements Jeedom sont automatiquement créés à l'envoi des informations
 De la même facon que les équipements sont automatiquement créés à l'arrivée de nouveaux périphériques, les capteurs des nodes sont automatiquement créés comme des "Informations" dans Jeedom ainsi que les commandes RECUES (il faut créer des commandes dans ce cas).
 
 
-==== Configuration des commandes des nodes
+==== Konfiguration der Knoten Befehle
 
 Les commandes ne sont pas toutes créées automatiquement.
 
