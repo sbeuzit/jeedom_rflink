@@ -22,10 +22,12 @@
  	die();
  }
 
- $messageType = init('messagetype');
- $json = file_get_contents('php://input');
- switch ($messageType) {
-   case 'saveValue' : rflink::receiveData($json); break;
+ $result = json_decode(file_get_contents("php://input"), true);
+ if (!is_array($result)) {
+ 	die();
+ }
+if (isset($result['devices'])) {
+   rflink::receiveData($result['devices']['rflink']);
  }
 
  return true;

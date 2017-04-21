@@ -326,9 +326,9 @@ class rflink extends eqLogic {
         }
     }
 
-    public static function receiveData($json) {
+    public static function receiveData($body) {
         //log::add('rflink', 'debug', 'Body ' . print_r($json,true));
-        $body = json_decode($json, true);
+        //$body = json_decode($json, true);
         $data = $body['data'];
         if (strpos($data,'DEBUG') !== false) {
             log::add('rflink', 'debug', 'Trame de debug recue : ' . $data);
@@ -454,118 +454,105 @@ public function preSave() {
     $this->setLogicalId($this->getConfiguration('protocol') . '_' . $this->getConfiguration('id'));
   }
 
-public static function deamon_info() {
-    $return = array();
-    $return['log'] = 'rflink_node';
-    $return['state'] = 'nok';
-    $pid = trim( shell_exec ('ps ax | grep "rflink/node/rflink.js" | grep -v "grep" | wc -l') );
-    if ($pid != '' && $pid != '0') {
-        $return['state'] = 'ok';
-    }
-    $return['launchable'] = 'ok';
-    if (config::byKey('nodeGateway', 'rflink') == 'none' || config::byKey('nodeGateway','rflink') == '') {
-        $return['launchable'] = 'nok';
-        $return['launchable_message'] = __('Le port n\'est pas configuré', __FILE__);
-    }
-    if (config::byKey('flashing', 'rflink') == '1') {
-        $return['launchable'] = 'nok';
-        $return['launchable_message'] = __('Flash en cours', __FILE__);
-    }
-    return $return;
-}
+  public static function deamon_info() {
+      $return = array();
+      $return['log'] = 'rflink';
+      $return['state'] = 'nok';
+      $pid_file = jeedom::getTmpFolder('rflink') . '/deamon.pid';
+      if (file_exists($pid_file)) {
+          $pid = trim(file_get_contents($pid_file));
+          if (is_numeric($pid) && posix_getsid($pid)) {
+              $return['state'] = 'ok';
+          } else {
+              shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null;rm -rf ' . $pid_file . ' 2>&1 > /dev/null;');
+          }
+      }
+      $return['launchable'] = 'ok';
+      $port = config::byKey('port', 'rflink');
+      if ($port != 'auto') {
+          $port = jeedom::getUsbMapping($port);
+          if (is_string($port)) {
+              if (@!file_exists($port)) {
+                  $return['launchable'] = 'nok';
+                  $return['launchable_message'] = __('Le port n\'est pas configuré', __FILE__);
+              }
+              exec(system::getCmdSudo() . 'chmod 777 ' . $port . ' > /dev/null 2>&1');
+          }
+      }
+      return $return;
+  }
 
-public static function deamon_start() {
-    self::deamon_stop();
-    $deamon_info = self::deamon_info();
-    if ($deamon_info['launchable'] != 'ok') {
-        throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
-    }
-    log::add('rflink', 'info', 'Lancement du démon rflink');
+  public static function deamon_start() {
+      self::deamon_stop();
+      $deamon_info = self::deamon_info();
+      if ($deamon_info['launchable'] != 'ok') {
+          throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
+      }
+      $port = config::byKey('port', 'rflink');
+      if ($port != 'auto') {
+          $port = jeedom::getUsbMapping($port);
+      }
+      $rflink_path = realpath(dirname(__FILE__) . '/../../resources/rflinkd');
+      $cmd = '/usr/bin/python ' . $rflink_path . '/rflinkd.py';
+      $cmd .= ' --device ' . $port;
+      $cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel('rflink'));
+      $cmd .= ' --socketport ' . config::byKey('socketport', 'rflink');
+      $cmd .= ' --serialrate 57600';
+      $cmd .= ' --callback ' . network::getNetworkAccess('internal', 'proto:127.0.0.1:port:comp') . '/plugins/rflink/core/api/rflink.php';
+      $cmd .= ' --apikey ' . jeedom::getApiKey('rflink');
+      $cmd .= ' --cycle ' . config::byKey('cycle', 'rflink');
+      $cmd .= ' --pid ' . jeedom::getTmpFolder('rflink') . '/deamon.pid';
+      log::add('rflink', 'info', 'Lancement démon rflinkd : ' . $cmd);
+      exec($cmd . ' >> ' . log::getPathToLog('rflink') . ' 2>&1 &');
+      $i = 0;
+      while ($i < 30) {
+          $deamon_info = self::deamon_info();
+          if ($deamon_info['state'] == 'ok') {
+              break;
+          }
+          sleep(1);
+          $i++;
+      }
+      if ($i >= 30) {
+          log::add('rflink', 'error', 'Impossible de lancer le démon rflink, vérifiez le log rfxcmd', 'unableStartDeamon');
+          return false;
+      }
+      message::removeAll('rflink', 'unableStartDeamon');
+      sleep(2);
+      self::sendIdToDeamon();
+      config::save('include_mode', 0, 'rflink');
+      log::add('rflink', 'info', 'Démon rflink lancé');
+      return true;
+  }
 
-    if (config::byKey('nodeGateway', 'rflink') == 'acm') {
-        $usbGateway = "/dev/ttyACM0";
-    } else if (config::byKey('nodeGateway', 'rflink') == 'network') {
-        $usbGateway = 'network';
-    } else {
-        $usbGateway = jeedom::getUsbMapping(config::byKey('nodeGateway', 'rflink'));
-    }
-    if ($usbGateway == '' ) {
-        throw new Exception(__('Le port : n\'existe pas', __FILE__));
-    }
-
-    $net = config::byKey('netGateway', 'rflink', 'none');
-
-    $url = network::getNetworkAccess('internal') . '/plugins/rflink/core/api/rflink.php?apikey=' . jeedom::getApiKey('rflink');
-
-    $log = log::convertLogLevel(log::getLogLevel('rflink'));
-
-    $sensor_path = realpath(dirname(__FILE__) . '/../../node');
-    if ($usbGateway != "none") {
-        exec('sudo chmod -R 777 ' . $usbGateway);
-    }
-    $cmd = 'nice -n 19 nodejs ' . $sensor_path . '/rflink.js ' . $url . ' ' . $usbGateway . ' ' . $net . ' ' . $log;
-
-    log::add('rflink', 'debug', 'Lancement démon rflink : ' . $cmd);
-
-    $result = exec('nohup ' . $cmd . ' >> ' . log::getPathToLog('rflink_node') . ' 2>&1 &');
-    if (strpos(strtolower($result), 'error') !== false || strpos(strtolower($result), 'traceback') !== false) {
-        log::add('rflink', 'error', $result);
-        return false;
-    }
-
-    $i = 0;
-    while ($i < 30) {
-        $deamon_info = self::deamon_info();
-        if ($deamon_info['state'] == 'ok') {
-            break;
-        }
-        sleep(1);
-        $i++;
-    }
-    if ($i >= 30) {
-        log::add('rflink', 'error', 'Impossible de lancer le démon rflink, vérifiez le port', 'unableStartDeamon');
-        return false;
-    }
-    message::removeAll('rflink', 'unableStartDeamon');
-    log::add('rflink', 'info', 'Démon rflink lancé');
-    sleep(5);
-    rflink::echoController('10;STATUS;');
-    return true;
-}
-
-public static function deamon_stop() {
-    exec('kill $(ps aux | grep "rflink/node/rflink.js" | awk \'{print $2}\')');
-    log::add('rflink', 'info', 'Arrêt du service rflink');
-    $deamon_info = self::deamon_info();
-    if ($deamon_info['state'] == 'ok') {
-        sleep(1);
-        exec('kill -9 $(ps aux | grep "rflink/node/rflink.js" | awk \'{print $2}\')');
-    }
-    $deamon_info = self::deamon_info();
-    if ($deamon_info['state'] == 'ok') {
-        sleep(1);
-        exec('sudo kill -9 $(ps aux | grep "rflink/node/rflink.js" | awk \'{print $2}\')');
-    }
-}
+  public static function deamon_stop() {
+      $pid_file = jeedom::getTmpFolder('rflink') . '/deamon.pid';
+      if (file_exists($pid_file)) {
+          $pid = intval(trim(file_get_contents($pid_file)));
+          system::kill($pid);
+      }
+      system::kill('rflinkd.py');
+      system::fuserk(config::byKey('socketport', 'rflink'));
+      $port = config::byKey('port', 'rflink');
+      if ($port != 'auto') {
+          system::fuserk(jeedom::getUsbMapping($port));
+      }
+      sleep(1);
+  }
 
 public static function dependancy_info() {
     $return = array();
-    $return['log'] = 'rflink_dep';
-    $serialport = realpath(dirname(__FILE__) . '/../../node/node_modules/serialport');
-    $request = realpath(dirname(__FILE__) . '/../../node/node_modules/request');
-    $return['progress_file'] = '/tmp/rflink_dep';
-    if (is_dir($serialport) && is_dir($request)) {
+    $return['progress_file'] = jeedom::getTmpFolder('rflink') . '/dependance';
+    if (exec(system::getCmdSudo() . system::get('cmd_check') . '-E "python\-serial|python\-request|python\-pyudev" | wc -l') >= 3) {
         $return['state'] = 'ok';
     } else {
         $return['state'] = 'nok';
     }
     return $return;
 }
-
 public static function dependancy_install() {
-    log::add('rflink','info','Installation des dépéndances nodejs');
-    $resource_path = realpath(dirname(__FILE__) . '/../../resources');
-    passthru('/bin/bash ' . $resource_path . '/nodejs.sh ' . $resource_path . ' > ' . log::getPathToLog('rflink_dep') . ' 2>&1 &');
+    log::remove(__CLASS__ . '_update');
+    return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . jeedom::getTmpFolder('rflink') . '/dependance', 'log' => log::getPathToLog(__CLASS__ . '_update'));
 }
 
 }
