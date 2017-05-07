@@ -76,36 +76,28 @@ if (!isConnect()) {
       </a></div>
       </div>
 
-      <div class="form-group">
-          <label class="col-sm-4 control-label">{{Port RFXcom}}</label>
-          <div class="col-sm-4">
-              <select class="configKey form-control" data-l1key="port">
-                  <option value="none">{{Aucun}}</option>
-                  <option value="auto">{{Auto}}</option>
-                  <?php
-foreach (jeedom::getUsbMapping() as $name => $value) {
-  echo '<option value="' . $name . '">' . $name . ' (' . $value . ')</option>';
-}
-foreach (ls('/dev/', 'tty*') as $value) {
-  echo '<option value="/dev/' . $value . '">/dev/' . $value . '</option>';
-}
-?>
-             </select>
-         </div>
-     </div>
-     <div class="form-group expertModeVisible">
-         <label class="col-sm-4 control-label">{{Port socket interne}}</label>
-         <div class="col-sm-2">
-             <input class="configKey form-control" data-l1key="socketport" />
-         </div>
-     </div>
-     <div class="form-group expertModeVisible">
-         <label class="col-sm-4 control-label">{{Cycle (s)}}</label>
-         <div class="col-sm-2">
-             <input class="configKey form-control" data-l1key="cycle" />
-         </div>
-     </div>
+      <div id="div_local" class="form-group">
+        <label class="col-lg-4 control-label">{{RFLink USB}} :</label>
+        <div class="col-lg-4">
+          <select style="margin-top:5px" class="configKey form-control" data-l1key="nodeGateway">
+            <option value="none">{{Aucun}}</option>
+            <option value="network">{{Réseau}}</option>
+            <?php
+            foreach (jeedom::getUsbMapping('', true) as $name => $value) {
+              echo '<option value="' . $name . '">' . $name . ' (' . $value . ')</option>';
+            }
+            ?>
 
+          </select>
+        </div>
+      </div>
+      <div id="div_local" class="form-group">
+        <label class="col-lg-4 control-label">{{RFLink réseau}} :</label>
+        <div class="col-lg-4 div_network">
+          <input name='net_cmd' type='text' class='configKey form-control' data-l1key="netGateway">
+
+          </div>
+        </div>
     </fieldset>
   </form>
 
