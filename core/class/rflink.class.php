@@ -193,7 +193,7 @@ class rflink extends eqLogic {
     }
 
     public function checkDivCmd($_cmd, $_value) {
-        $divcmd = 'TEMP,RAIN,RAINRATE,RAINTOT,WINSP,AWINSP';
+        $divcmd = 'TEMP,RAIN,RAINRATE,RAINTOT,WINSP,WINCHL,WINTMP,AWINSP';
         if (strpos($divcmd,$_cmd) !== false) {
             $result = $_value/10;
         } else {
@@ -287,7 +287,7 @@ class rflink extends eqLogic {
         // calcul valeur pour la temp et autres cas particuliers
         log::add('rflink', 'debug', 'Commande capteur ' . $_cmd . ' value ' . $_value);
         if ($_cmd != '') {
-            if ($_cmd == 'TEMP') {
+            if ($_cmd == 'TEMP' || $_cmd == 'WINCHL' || $_cmd == 'WINTMP') {
                 if (substr($_value,0,1) != 0) {
                     $_value = '-' . hexdec(substr($_value, -3));
                 } else {
