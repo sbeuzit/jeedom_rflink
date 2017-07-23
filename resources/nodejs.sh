@@ -64,7 +64,7 @@ sudo npm cache clean
 sudo rm -rf node_modules
 
 echo 80 > /tmp/rflink_dep
-sudo npm install --unsafe-perm serialport
+sudo npm install --unsafe-perm serialport@4.0.7
 echo 85 > /tmp/rflink_dep
 sudo npm install --unsafe-perm request
 echo 90 > /tmp/rflink_dep
